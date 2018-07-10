@@ -1,0 +1,398 @@
+---
+title: "STA305/1004-Class 16"
+output: beamer_presentation
+fontsize: 8pt
+date: "March 13, 2017"
+---
+
+```{r,echo=FALSE,cache=TRUE,warning=FALSE}
+tab0401 <- read.table("~/Dropbox/Docs/sta305/BHHData/BHH2-Data/tab0401.dat", header=TRUE, quote="\"")
+library(BHH2)
+```
+
+
+```{r,cache=TRUE,comment="",cache=TRUE,echo=FALSE}
+#contrasts(tab0401$diets)
+lm.diets <- lm(y~diets,data=tab0401)
+#round(summary(lm.diets)$coefficients,2)
+```
+
+
+```{r,echo=F,cache=T,warning=FALSE}
+library(tidyr)
+data_wide <- spread(tab0401, diets, y)
+A <- data_wide$A[is.na(data_wide$A)==F]
+B <- data_wide$B[is.na(data_wide$B)==F]
+C <- data_wide$C[is.na(data_wide$C)==F]
+D <- data_wide$D[is.na(data_wide$D)==F]
+ave <- c(mean(A),mean(B),mean(C),mean(D))
+gave <- rep(mean(tab0401$y),4)
+diff <- ave-gave
+dat <- rbind(cbind(A,B,C,D),ave,gave,diff)
+row.names(dat) <- c("","","","","","","Treatment Average", "Grand Average","Difference")
+#knitr::kable(dat,col.names=c("A","B","C","D"))
+```
+
+
+# Today's Class
+
+- Sample size for ANOVA
+- Factorial designs at two levels
+- Cube plots
+- Calculation of factorial effects
+
+
+
+# Sample size for ANOVA - Designing a study to compare more than two treatments 
+
+- Consider the hypothesis that k means are equal vs. the alternative that at least two differ. 
+- What is the probability that the test rejects if at least two means differ? 
+- Power = $1-P({\text{Type II error}})$ is this probability.
+
+# Sample size for ANOVA - Designing a study to compare more than two treatments 
+
+The null and alternative hypotheses are:
+
+$$H_0: \mu_1=\mu_2 = \cdots = \mu_k \thinspace {\text  vs. } \thinspace H_1: \mu_i \ne\mu_j.$$ 
+
+The test rejects at level $\alpha$ if
+
+$$MS_{Treat}/MS_E \ge F_{k-1,N-K,\alpha}.$$
+
+The power of the test is
+
+$$ 1- \beta= P\left(MS_{Treat}/MS_E \ge F_{k-1,N-K,\alpha} \right),$$
+
+when $H_0$ is false.  
+
+# Sample size for ANOVA - Designing a study to compare more than two treatments 
+
+When $H_0$ is false it can be shown that:
+
+- $MS_{Treat}/\sigma^2$ has a non-central Chi-square distribution with $k-1$ degrees of freedom and non-centrality parameter $\delta$.
+
+- $MS_{Treat}/MS_E$ has a non-central $F$ distribution with the numerator and denominator degrees of freedom $k-1$ and $N-k$ respectively, and non-centrality parameter 
+
+$$\delta = \frac{\sum_{i=1}^kn_i\left(\mu_i-{\bar \mu} \right)^2}{\sigma^2},$$
+
+where $n_i$ is the number of observations in group $i$, ${\bar \mu}=\sum_{i=1}^k \mu_i/k$, and $\sigma^2$ is the within group error variance .
+
+This is dentoted by $F_{k-1,N-k}(\delta)$.
+
+# Direct calculation of Power
+
+- The power of the test is 
+
+$$P\left(F_{k-1,N-k}(\delta) > F_{k-1,N-K,\alpha} \right).$$
+
+- The power is an increasing function $\delta$ 
+- The power depends on the true values of the treatment means $\mu_i$, the error variance $\sigma^2$, and sample size $n_i$.
+- If the experimentor has some prior idea about the treament means and error variance the sample size (number of replications) that will guaruntee a pre-assigned power of the test.
+
+# Blood coagulation example - sample size
+
+Suppose that an investigator would like to replcate the blood coagulation study with only 3 animals per diet.  In this case $k=4, n_i=3.$  The treatment means from the initial study are:
+
+Diet | A | B  | C | D 
+-----|---|---|---|---
+Average | `r ave[1]` | `r ave[2]` | `r ave[3]`| `r ave[4]`|
+
+```{r}
+anova(lm.diets)
+```
+
+# Blood coagulation example - sample size
+
+- $\mu_1=$ `r ave[1]`, $\mu_2=$ `r ave[2]`, $\mu_3=$ `r ave[3]`, $\mu_4=$ `r ave[4]`.  
+- The error variance $\sigma^2$ was estimated as $MS_E=5.6$.  
+- Assuming that the estimated values are the true values of the parameters, the non-centrality parameter of the $F$ distribution is
+
+$$\delta = 3 \times \left((61-64)^2+(66-64)^2+(68-64)^2+(61-64)^2\right)/5.6=20.35714$$
+
+# Blood coagulation example - sample size
+
+If we choose $\alpha=0.05$ as the significance level then $F_{3,20,0.05}=$ `r qf(p = .05,df1 = 3,df2 = 8,lower.tail=F)`. The power of the test is then 
+
+$$P\left(F_{3,8}(20.35714) > 4.066181 \right)=0.8499.$$
+
+This was calculated using the CDF for the $F$ distribution in R `pf()`.
+
+
+# Calculating power and sample size using the pwr library
+
+- There are several libraries in R which can calculate power and sample size for statistical tests.  The library `pwr()` has a function for ANOVA.
+
+- `pwr.anova.test(k = NULL, n = NULL, f = NULL, sig.level = 0.05, power = NULL)` 
+
+for computing power and sample size.
+
+- `k`	Number of groups
+- `n`	Number of observations (per group)
+- `f` Effect size
+
+The effect size $f$ 
+
+$$f = \sqrt{\frac{\sum_{i=1}^k\left(\mu_i-{\bar \mu} \right)^2/k}{\sigma^2}},$$
+
+is related to the non-centrality parameter $\delta$ via $\delta=k\cdot n_i\cdot f^2$.
+
+- $n_i$ is the number of observations in group $i$, ${\bar \mu}=\sum_{i=1}^k \mu_i/k$, and $\sigma^2$ is the within group error variance.
+
+# Calculating power and sample size using the pwr library
+
+In the previous example $\delta=20.35714$ so $f=\sqrt{\frac{\delta}{k \cdot n_i}}=\sqrt{20.35714/4\cdot 3}=$ `r sqrt(20.35714/(12))`.
+
+```{r,warning=FALSE}
+library(pwr)
+pwr.anova.test(k = 4,n = 3,f = 1.30247)
+```
+
+
+
+# Calculating power and sample size using the pwr library
+
+```{r,echo=FALSE}
+library(pwr)
+x <- seq(.05,5,by=0.01)
+plot(x,pwr.anova.test(k = 4,n = 3,f = x)$power,type="l",
+     xlab="Effect Size",ylab="Power",main="Power vs. Effect Size for k=4, n=3")
+```
+
+
+
+# Calculating power using simulation
+
+The general procedure for simulating power is:
+
+1. Use the underlying model to generate random data with (a) specified sample sizes, (b) parameter values that one is trying to detect with the hypothesis test, and (c) nuisance parameters such as variances.
+
+2. Run the estimation program (e.g., `t.test()`,`lm()` ) on these randomly generated data.
+
+3. Calculate the test statistic and p-value. 
+
+4. Do Steps 1–3 many times, say, N, and save the p-values.  The estimated power for a level alpha test is the proportion of observations (out of N) for which the p-value is less than alpha.
+
+# Calculating power using simulation
+
+One of the advantages of calculating power via simulation is that we can investigate what happens to power if, say, some of the assumptions behind one-way ANOVA are violated.
+
+# Calculating power using simulation - R program
+
+
+```{r,cache=TRUE}
+#Simulate power of ANOVA for three groups
+
+NSIM <- 1000 # number of simulations
+res <- numeric(NSIM) # store p-values in res
+
+mu1 <- 2; mu2 <- 2.5;mu3 <- 2  # true mean values of treatment groups
+sigma1 <- 1; sigma2 <- 1; sigma3 <- 1 #variances in each group
+n1 <- 40; n2 <- 40; n3 <- 40 #sample size in each group
+
+for (i in 1:NSIM) # do the calculations below N times
+  { 
+# generate sample of size n1 from N(mu1,sigma1^2)
+y1 <- rnorm(n = n1,mean = mu1,sd = sigma1) 
+# generate sample of size n2 from N(mu2,sigma2^2)
+y2 <- rnorm(n = n2,mean = mu2,sd = sigma2) 
+# generate sample of size n3 from N(mu3,sigma3^2)
+y3 <- rnorm(n = n3,mean = mu3,sd = sigma3) 
+y <- c(y1,y2,y3) # store all the values from the groups
+# generate the treatment assignment for each group
+trt <- as.factor(c(rep(1,n1),rep(2,n2),rep(3,n3))) 
+m <- lm(y~trt) # calculate the ANOVA
+res[i] <- anova(m)[1,5] # p-value of F test
+}
+sum(res<=0.05)/NSIM # calculate p-value
+```
+
+# Calculating power using simulation - R program
+
+- Assume non-equal variances.
+
+```{r,cache=TRUE}
+#Simulate power of ANOVA for three groups
+NSIM <- 1000 # number of simulations
+res <- numeric(NSIM) # store p-values in res
+mu1 <- 2; mu2 <- 2.5;mu3 <- 2  # true mean values of treatment groups
+sigma1 <- 2; sigma2 <- 1; sigma3 <- 1 #variances in each group
+n1 <- 40; n2 <- 40; n3 <- 40 #sample size in each group
+
+for (i in 1:NSIM) # do the calculations below N times
+  { 
+# generate sample of size n1 from N(mu1,sigma1^2)
+y1 <- rnorm(n = n1,mean = mu1,sd = sigma1) 
+# generate sample of size n2 from N(mu2,sigma2^2)
+y2 <- rnorm(n = n2,mean = mu2,sd = sigma2) 
+# generate sample of size n3 from N(mu3,sigma3^2)
+y3 <- rnorm(n = n3,mean = mu3,sd = sigma3) 
+y <- c(y1,y2,y3) # store all the values from the groups
+# generate the treatment assignment for each group
+trt <- as.factor(c(rep(1,n1),rep(2,n2),rep(3,n3))) 
+m <- lm(y~trt) # calculate the ANOVA
+res[i] <- anova(m)[1,5] # p-value of F test
+}
+sum(res<=0.05)/NSIM # calculate p-value
+```
+
+
+
+# Example of a factorial design
+
+Suppose that an investigator is interested in examining three components of a weight loss intervention.
+The three components are:
+
+1. Keeping a food diary (yes/no)
+2. Increasing activity (yes/no)
+3. Home visit (yes/no)
+
+#Factorial designs
+
+The investigator plans to investigate all $2x2x2=2^3= 8$ combinations of experimental conditions.
+
+The experimental conditions will be.
+
+Expt condition | Keep food diary | Increase physical activity | Home visit |weight loss
+------------------------------|----------------------|------------------------------|------------|-----------
+1                             | No                   | No                           | No         |$y_1$
+2                             | No                   | No                           | Yes        |$y_2$
+3                             | No                   | Yes                           | No        |$y_3$
+4                             | No                   | Yes                           | Yes       |$y_4$
+5                             | Yes                   | No                           | No        |$y_5$
+6                             | Yes                   | No                           | Yes       |$y_6$
+7                             | Yes                   | Yes                           | No       |$y_7$
+8                             | Yes                   | Yes                           | Yes      |$y_8$
+
+# Factorial designs at two levels
+
+- To perform a factorial design, you select a fixed number of levels of each of a number of factors (variables) and then run experiments in all possible combinations. 
+
+# Factorial designs at two levels
+
+- The factors can be quantitative or qualitative. 
+- Two levels of a quantitative variable could be two different temperatures or two different concentrations. 
+- Qualitative factors might be two types of catalysts or the presence and absence of some entity.  
+
+
+
+
+# Factorial design
+
+The notation $2^3$ identifies: 
+- the number of factors (3)
+- the number of levels of each factor (2)
+- how many experimental conditions are in the design ($2^3=8$)
+
+Factorial experiments can involve factors with different numbers of levels.  
+
+
+#Factorial design
+
+Consider a $4^2x3^2x2$ design.
+
+(a) How many factors?
+(b) How many levels of each factor?
+(c) How many experimental conditions (runs)? 
+
+# Difference between ANOVA and Factorial Designs
+
+In ANOVA the objective is to compare the individual experimental conditions with each other.
+In a factorial experiment the objective is generally to compare combinations of experimental conditions.
+
+Let's consider the food diary study above.  What is the effect of keeping a food diary?  
+
+Expt condition | Keep food diary | Increase physical activity | Home visit |weight loss
+------------------------------|----------------------|------------------------------|------------|-----------
+1                             | No                   | No                           | No         |$y_1$
+2                             | No                   | No                           | Yes        |$y_2$
+3                             | No                   | Yes                           | No        |$y_3$
+4                             | No                   | Yes                           | Yes       |$y_4$
+5                             | Yes                   | No                           | No        |$y_5$
+6                             | Yes                   | No                           | Yes       |$y_6$
+7                             | Yes                   | Yes                           | No       |$y_7$
+8                             | Yes                   | Yes                           | Yes      |$y_8$
+
+
+We can estimate the effect of food diary by comparing the mean of all conditions where food diary is set to NO (conditions 1-4) and mean of all conditions where food diary set to YES (conditions 5-8).  This is also called the **main effect** of food diary, the adjective *main* being a reminder that this average is taken over the levels of the other factors.   
+
+# Difference between ANOVA and Factorial Designs
+
+Expt condition | Keep food diary | Increase physical activity | Home visit |weight loss
+------------------------------|----------------------|------------------------------|------------|-----------
+1                             | No                   | No                           | No         |$y_1$
+2                             | No                   | No                           | Yes        |$y_2$
+3                             | No                   | Yes                           | No        |$y_3$
+4                             | No                   | Yes                           | Yes       |$y_4$
+5                             | Yes                   | No                           | No        |$y_5$
+6                             | Yes                   | No                           | Yes       |$y_6$
+7                             | Yes                   | Yes                           | No       |$y_7$
+8                             | Yes                   | Yes                           | Yes      |$y_8$
+
+
+The main effect of food diary is:
+
+$$\frac{y_1+y_2+y_3+y_4}{4}-\frac{y_5+y_6+y_7+y_8}{4}.$$
+
+The main effect of physical activity is:
+
+$$\frac{y_1+y_2+y_5+y_6}{4}-\frac{y_3+y_4+y_7+y_8}{4}.$$
+
+The main effect of home visit is:
+
+$$\frac{y_1+y_3+y_5+y_7}{4}-\frac{y_2+y_4+y_6+y_8}{4}.$$
+
+# Question
+
+A chemical reaction experiment was carried out with the objective of comparing if a new catalyst B would give higher yields than the old catalyst A.  The experiment was run on six different batches of raw material which were known to be quite different from one another.
+
+![](poll.png)
+
+# Factorial designs at two levels
+
+To perform a factorial design:
+
+1. Select a fixed number of levels of each factor.
+2. Run experiments in all possible combinations.
+
+# Factorial designs at two levels
+
+- We will discuss designs where there are just two levels for each factor. 
+- Factors can be quantitative or qualitative. 
+- Two levels of quantitative variable could be two different temperatures or concentrations. 
+- Two levels of a quantitative variable could be two different types of catalysts or presence/absence of some entity.
+
+# Pilot plant investigation - example of factorial design
+
+ A pilot plant invsetiagtion employed a $2^3$ factorial design (Box, Hunter, and Hunter (2005)) with 
+
+Factors | level 1 | level 2
+--------|---------|---------
+Temperature |$160 \rm {C}^{\circ}$(-1)|$180 \rm {C}^{\circ}$(+1)
+Concentration| 20% (-1)| 40% (+1)
+Catalyst| A (-1)|B(+1)
+
+
+```{r,echo=FALSE, cache=TRUE}
+tab0502 <- read.table("~/Dropbox/Docs/sta305/BHHData/BHH2-Data/tab0502.dat", header=TRUE, quote="\"")
+knitr::kable(tab0502)
+```
+
+- Each data value recorded is for the response yield $y$ averaged over two duplicate runs.
+
+# Cube plots
+
+
+```{r,message=FALSE,warning=FALSE}
+library("FrF2")
+bhh54 <- lm(y~T*C*K,data=tab0502)
+cubePlot(bhh54,"T","K","C",main="Cube plot for pilot plant investigation")
+```
+
+
+
+# Cube plots
+
+- 8 run design produces 12 comparisons 
+- Each edge of cube only one factor changed while other 2 held constant.
+- Therefore experimenter that believes in only changing one factor at a time is satisfied.
+

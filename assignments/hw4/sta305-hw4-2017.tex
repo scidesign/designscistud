@@ -1,0 +1,188 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={STA305/1004 - Homework \#4},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{STA305/1004 - Homework \#4}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{}
+  \preauthor{}\postauthor{}
+  \predate{\centering\large\emph}
+  \postdate{\par}
+  \date{Due Date: April 5, 2017}
+
+
+\begin{document}
+\maketitle
+
+\textbf{Due date:} Electronic submission via Crowdmark by Wednesday,
+April 5, 2017 at 22:00. NB: e-mail submissions will NOT be accepted. DO
+NOT SUBMIT MULTIPLE DOCUMENTS (E.G., ONE DOCUMENT WITH A DESCRIPTION AND
+ANOTHER WITH GRAPHS)
+
+Each student (no groups allowed) will plan and perform a homemade
+factorial experiment. This includes collecting and analyzing the data in
+R. I leave it to each individual student to decide what he or she wants
+to study. The number of possible topics is very large. It's very
+important you pick a topic that you are interested in and will enjoy
+working on.
+
+STA1004 students: If you are working on a research project where a
+factorial design can be implemented then I encourage you to use this
+project as your topic.
+
+The report should not be longer than 4 pages including tables and plots
+and be \textbf{submitted in one document}. An example report can be
+found on portal. Feel free to use this report as a template.
+
+The report should include the following three sections:
+
+\section{Description of the design. (One page
+maximum)}\label{description-of-the-design.-one-page-maximum}
+
+The design should be a replicated or unreplicated full or fractional
+factorial experiment. Include details on how and why you conducted the
+experiment. What do you hope to learn by doing this experiment? You may
+want to include a small picture of your experimental apparatus if it
+will help your description.
+
+Grade:
+
+5 -- Excellent: Strong evidence of original thinking and a clear
+explanation of how and why they conducted the experiment.
+
+4- Good: Grasped the basics of designing a factorial study; a good
+explanation of how and why they did the experiment.
+
+3- Adequate: Understood the basics of designing a factorial study, but
+may not have designed a factorial experiment. Provided an adequate
+explanation of the design.
+
+2- Marginal: Some evidence of understanding the basic design of a
+factorial study. Provided a poor explanation of their design.
+
+1- Inadequate: Little evidence of even a superficial understanding of a
+factorial design. Little explanation about how or why the design was
+chosen.
+
+\section{Analysis of the data. (Two pages
+maximum)}\label{analysis-of-the-data.-two-pages-maximum}
+
+Include appropriate plots and calculations such as: main effects and
+interactions; estimated variance of the effect (if replicated);
+confidence intervals for true values of effects (if replicated); Lenth
+plot; or half normal plot.
+
+Grade:
+
+5 -- Excellent: Strong evidence of data analysis skills. Probably used R
+to do calculations and plots, but calculations and plots might also be
+done neatly by hand.
+
+4- Good: Good evidence of data analysis skills. Appropriate calculations
+were done, and maybe appropriate plots were included.
+
+3- Adequate: Understood the basics of required data analysis.
+
+2- Marginal: Some evidence of understanding the basic data analysis
+required, but might not have carried out all the appropriate
+calculations and plots.
+
+1- Inadequate: Little evidence of even a superficial understanding of
+the data analysis required to analyse a factorial design.
+
+\section{Conclusions. (One page
+maximum)}\label{conclusions.-one-page-maximum}
+
+What conclusions can you make based on the results of your experiment?
+Write a paragraph or two outlining these conclusions.
+
+Grade:
+
+5 -- Excellent: Conclusions are highly appropriate given the experiment
+conducted. Clearly written.
+
+4- Good: Conclusions are appropriate given the experimental context.
+Writing is good.
+
+3- Adequate: Some conclusions are appropriate; other obvious conclusions
+might be missing.
+
+2- Marginal: Some evidence that there was an understanding of the basic
+conclusions, but several obvious conclusions not stated.
+
+1- Inadequate: Little evidence of even a superficial understanding of
+the conclusions that can be drawn from the experiment.
+
+
+\end{document}

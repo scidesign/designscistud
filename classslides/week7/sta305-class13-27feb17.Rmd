@@ -1,0 +1,83 @@
+---
+title: "STA305/1004 - Review Class"
+fontsize: 9pt
+date: "February 27, 2017"
+output:
+  slidy_presentation: default
+  ioslides_presentation: default
+  beamer_presentation: default
+---
+
+# Today's class
+
+- Review for midterm test
+
+
+# Midterm Test Information
+
+**Date:** Wednesday, March 1
+
+**Time:** The test will begin at approximately 11:10.  The time allowed to complete the test will be 90 minutes.
+
+**Location:** 
+
+- If your last name begins with a letter between A-M then you will write in AH400 (our classroom).
+- If your last name begins with a letter between N-Z then you will write in EX310.
+
+**Test Preview:**
+
+Available at 1:00PM today on Portal.
+
+
+
+# Q1
+
+Consider a randomized study of two medical treatments A and B.  Three subjects are randomized to treatment A and three subjects are randomized to treatment B.  The response measured is mortality, $y$, after 6-weeks on treatment. Primary question: is there a difference in average mortality between the two treatments?
+
+```{r,cache=TRUE,echo=FALSE}
+set.seed(12)
+yA <- round(rnorm(3,10,3),2)
+yB <- round(rnorm(3,12,4),2)
+```
+
+
+The data are below:
+
+Subject |$y$ | Treatment
+--|--|--
+1|`r yA[1]` |  A
+5|`r yA[2]` |  A
+4|`r yA[3]` |  A
+6|`r yB[1]` |B
+3|`r yB[2]` |B
+2|`r yB[3]` |B
+
+(a) Is the treatment assignment ignorable?
+(b) How could subjects be randomized to treatment?
+
+# Q1
+
+```{r,comment=""}
+y <- c(yA,yB);observed <- mean(yA)-mean(yB);observed #obs mean diff
+index <- combn(1:6,3); res<-numeric(20)
+for(i in 1:20){res[i] <- mean(y[index[,i]])-mean(y[-index[,i]])}
+round(res,2)
+mean(res)
+round(res-mean(res),2)
+round(observed-mean(res),2)
+#sum(abs(round(res-mean(res),2))>=round(observed-mean(res),2))/20
+#hist(res)
+```
+
+# Q1
+
+(c) Calculate the randomization P-value?
+(d) Does the treatment *cause* a change in average mortality?
+
+# Q2
+
+(a)  What is statistical power?
+(b)  Suppose that a study is designed to test $H_0: \mu=0$ vs. $H_1:\mu<0$.  The study is conducted with $n=10, \sigma=1$ using $\alpha=0.05$.  The data is analyzed: ${\bar x}=-0.36,P\text{-value}=0.13$.  Is the reason that the study is not significant due to low power?  
+
+
+

@@ -1,0 +1,646 @@
+---
+title: "STA305/1004 - Class 6"
+date: "January 27, 2016"
+output: beamer_presentation
+fontsize: 9pt
+---
+
+# Today's Class
+
+- Power of Statistical Tests
+- Power of the one-sample z-test
+- Power of the one-sample t-test
+- Power of the two-sample t-test
+- Sample size formulae two-samples means/proportions
+- Calculating power via simulation
+
+# Why is Power and Sample Size Important in Phase III Clinical Trials?
+
+- If a new treatment is to be used in patients then it should be compared to the standard treatment. 
+- Evidence is required that the new treatment is effective and safe.
+- The form of the evidence is a hypothesis test.
+- Will the hypothesis test reject if a difference between the treatments really exists?
+- High power will ensure that if a difference exists then the hypothesis test will have a high probability of rejecting.
+- The most practical way to ensure the test is powerful is to enrol enough patients in each arm of the trial.  
+
+
+# Sample Size and Power in Phase III Clinical Trials
+
+- The sample size is calculated under the alternative hypothesis based on the type I error rate $\alpha$ and power $1 - \beta$. 
+
+- Specify a clinically meaningful difference that is to be detected at the conclusion of the trial. 
+
+- Intuitively, if a small difference (effect size) is expected between the two treatments in comparison, a large sample size would be required, and vice versa. Why?
+
+- Sample size also depends on the variance. 
+
+- The larger the variance, the harder it is to detect the difference and thus a larger sample size is needed.
+
+
+# Power of the one sample z-test
+
+Let $X_1,...,X_n$ be a random sample from a $N(\mu,\sigma^2)$ distribution.  A test of the hypothesis 
+
+$$H_0:\mu=\mu_0 \thinspace \text{ versus } \thinspace H_0:\mu \ne \mu_0 $$
+
+will reject at level $\alpha$ if and only if 
+
+$$ \left|\frac{{\bar X} - \mu_0}{\sigma/{\sqrt{n}}} \right| \ge z_{\alpha/2},$$
+
+or
+
+$$ \left|{\bar X} -\mu_0 \right| \ge \frac{\sigma}{\sqrt{n}} z_{\alpha/2},$$
+
+where $z_{\alpha/2}$ is the $100(1-\alpha/2)^{th}$ percentile of the $N(0,1)$.
+
+# Power of the one sample z-test
+
+The power of the test at $\mu=\mu_1$ is
+
+$$\begin{aligned}
+1-\beta &= 1-P\left(\text{type II error}\right) \\
+        &= P\left(\text{Reject } H_0|H_1 \text{ is true}\right) \\
+        &= P\left(\text{Reject } H_0|\mu=\mu_1\right) \\
+        &= P\left(\left|{\bar X} -\mu_0 \right| \ge \frac{\sigma}{\sqrt{n}} z_{\alpha/2}|\mu=\mu_1\right) \\
+\end{aligned}$$
+
+Subtract the mean $\mu_1$ and divide by $\sigma/\sqrt{n}$ to obtain (why?):
+
+$$ 1-\beta=1-\Phi\left( z_{\alpha/2}-\left(\frac{\mu_1-\mu_0}{\sigma/\sqrt{n}}\right) \right)+\Phi\left( -z_{\alpha/2}-\left(\frac{\mu_1-\mu_0}{\sigma/\sqrt{n}}\right) \right),$$
+
+where $\Phi(\cdot)$ is the $N(0,1)$ CDF. 
+
+# Power of the one sample z-test
+
+The power function of the one-sample z-test is:
+
+$$ 1-\beta=1-\Phi\left( z_{\alpha/2}-\left(\frac{\mu_1-\mu_0}{\sigma/\sqrt{n}}\right) \right)+\Phi\left( -z_{\alpha/2}-\left(\frac{\mu_1-\mu_0}{\sigma/\sqrt{n}}\right) \right).$$
+
+What is the limit of the power function as:
+\begin{itemize}
+\item $n \rightarrow \infty$ \\
+\item $\mu_1 \rightarrow \mu_0$ \\
+\item $\sigma \rightarrow 0$ \\
+\end{itemize}
+
+# Power of the one-sample z-test
+
+The power function for a one-sample z-test can be calculated using R.
+
+$$ 1-\beta=1-\Phi\left( z_{\alpha/2}-\left(\frac{\mu_1-\mu_0}{\sigma/\sqrt{n}}\right) \right)+\Phi\left( -z_{\alpha/2}-\left(\frac{\mu_1-\mu_0}{\sigma/\sqrt{n}}\right) \right).$$
+
+```{r,cache=TRUE}
+pow.z.test <- function(alpha,mu1,mu0,sigma,n){
+  arg1 <- qnorm(1-alpha/2)-(mu1-mu0)/(sigma/sqrt(n))
+  arg2 <- -1*qnorm(1-alpha/2)-(mu1-mu0)/(sigma/sqrt(n))
+  1-pnorm(arg1)+pnorm(arg2)
+}
+```
+
+# Power of the one-sample z-test
+
+For example the power of the test
+
+$$H_0:\mu=0 \thinspace \text{ versus } \thinspace H_0:\mu=0.2$$ with $n=30,\sigma=0.2, \alpha=0.05$ can be calculated by calling the above function.
+
+```{r,comment=""}
+pow.z.test(.05,.15,0,.2,30) 
+```
+
+What does this mean?
+
+# Power of the one-sample t-test
+
+Let $X_1,...,X_n$ be a random sample from a $N(\mu,\sigma^2)$ distribution.  A test of the hypothesis 
+
+$$H_0:\mu=\mu_0 \thinspace \text{ versus } \thinspace H_0:\mu \ne \mu_0 $$
+
+will reject at level $\alpha$ if and only if 
+
+$$ \left|\frac{{\bar X} - \mu_0}{S/{\sqrt{n}}} \right| \ge t_{n-1, \alpha/2},$$
+
+where $t_{n-1, \alpha/2}$ is the $100(1-\alpha/2)^{th}$ percentile of the $t_{n-1}$.
+
+# Power of the one-sample t-test
+
+It can be shown that
+
+$$\sqrt{n} \left[\frac{{\bar X}-\mu_0}{S}\right] =  \frac{Z + \gamma}{\sqrt{V/(n-1)}},$$
+
+where,
+
+$$\begin{aligned}
+Z &= \frac{\sqrt{n}({\bar X}-\mu_1)}{\sigma} \\
+\gamma &=  \frac{\sqrt{n}(\mu_1-\mu_0)}{\sigma} \\
+V &= \frac{(n-1)}{\sigma^2} S^2.
+\end{aligned}$$
+
+$Z \sim N(0,1)$ and $V \sim \chi^2_{n-1}$ and $Z$ is independent of $V$.
+
+# Power of the one-sample t-test
+
+- If $\gamma=0$ then then $\sqrt{n} \left[\frac{{\bar X}-\mu_0}{S}\right] \sim t_{n-1}$.  This is sometimes called the **central t-distribution**.
+
+- If $\gamma \ne 0$ then $\sqrt{n} \left[\frac{{\bar X}-\mu_0}{S}\right] \sim t_{n-1, \gamma}$, where $t_{n-1, \gamma}$ is the **non-central t-distribution** with non-centrality parameter $\gamma$.
+
+# Power of the one-sample t-test
+
+A plot of the central ($\gamma=0$) and non-central t ($\gamma=1,2$) are shown in the plot below.
+
+```{r,echo=FALSE}
+#Plot of noncentral t and central t
+x <- seq(-6,6,by=0.01)
+plot(x,dt(x,10,0),type="l",ylab="t-density",col="black",xlab="x",main="Noncentral t-distribution, n=10")
+points(x,dt(x,10,1),type="l",lty=2,col="blue")
+points(x,dt(x,10,2),type="l",lty=3,col="red")
+legend("topleft",legend=c(expression(gamma == 0),expression(gamma == 1),expression(gamma == 2)),lty=c(1,2,3),col=c("black","blue","red"))
+```
+
+
+
+# Power of the one-sample t-test
+
+The power of the test at $\mu=\mu_1$ is
+
+$$\begin{aligned}
+1-\beta &= 1-P\left(\text{type II error}\right) \\
+        &= P\left(\text{Reject } H_0|H_1 \text{ is true}\right) \\
+        &= P\left(\text{Reject } H_0|\mu=\mu_1\right) \\
+        &= P\left(\left|\frac {{\bar X} -\mu_0} {\frac{S}{\sqrt{n}}} \right| \ge  t_{n-1, \alpha/2}|\mu=\mu_1\right) \\
+        &= P(t_{n-1,\gamma}\ge t_{n-1,\alpha/2})+P(t_{n-1,\gamma}< -t_{n-1,\alpha/2})
+\end{aligned}$$
+
+# Power of the one-sample t-test
+
+$$P(t_{n-1,\gamma}\ge t_{n-1,\alpha/2})+P(t_{n-1,\gamma}< -t_{n-1,\alpha/2})$$
+
+The following function calculates the power function for the one-sample t-test in R:
+
+```{r,cache=TRUE}
+onesampttestpow <- function(alpha,n, mu0, mu1,sigma)
+{delta <- mu1-mu0
+t.crit <-qt(1-alpha/2,n-1)
+t.gamma <- sqrt(n)*(delta/sigma)
+t.power <- 1-pt(t.crit,n-1,ncp=t.gamma)
+            +pt(-t.crit,n-1,ncp=t.gamma)
+return(t.power)
+}
+```
+
+
+
+# Power of the one-sample t-test
+
+The power of the t-test for testing 
+
+$$H_0:\mu=0 \thinspace \text{ versus } \thinspace H_0:\mu=0.15$$ with $n=10,\sigma=0.2, \alpha=0.05$ can be calculated by calling the above function is
+  
+```{r,comment=""}
+onesampttestpow(.05,10,0,.15,0.2)
+```
+
+
+# Power of the one-sample t-test
+
+Use the built-in function in R to calculate the power of t-test `power.t.test()`.  
+
+```{r,comment=""}
+power.t.test(n = 10,delta = 0.15,sd = 0.2,
+             sig.level = 0.05,type = "one.sample" )
+```
+
+# Power of the two-sample t-test
+
+- Consider a two-sample comparison with continuous outcomes. Let $Y_{ik}$ be the observed outcome for the $i^{th}$ subject in the $kth$ treatment group, for $i = 1,...,n_k$, and $k= 1,2$. The outcomes in the two groups are assumed to be independent and normally distributed with different means but an equal variance $\sigma^2$,
+
+$$Y_{ik} \sim N(\mu_k,\sigma^2).$$
+
+- Let $\theta=\mu_1-\mu_2$,  the difference in the mean between treatment 1 (the new therapy) and treatment 2 (the standard of care).
+
+- To test whether the effects of the two treatments are the same, we formulate the null and alternative hypotheses as 
+
+$$H_0:\theta =0 \thinspace \text{ versus } H_0:\theta \ne 0.$$
+
+
+
+# Power of the two-sample t-test
+
+The two-sample t statistic is given by
+
+$$ T_n=\frac {{\bar Y}_1 - {\bar Y}_2}{S_p \sqrt{(1/n_1+1/n_2)}} \sim t_{n_1+n_2-2}.$$
+
+- $T_n \sim t_{n_1+n_2-2}$ under $H_0$  
+- $T_n \sim t_{n_1+n_2-2,\gamma}$ with noncentrality parameter
+
+$$ \gamma = \frac {\mu_1-\mu_2}{\sigma\sqrt{1/n_1+1/n_2}},$$
+
+under $H_1$. 
+
+
+
+
+
+# Power of the two-sample t-test
+ 
+$H_0$ is rejected if 
+
+$$\left| T_n \right| \ge t_{n_1+n_2-2,\alpha/2},$$  
+
+where $t_{df,\alpha/2}$ is the $100(1-\alpha/2)th$ percentile of the central t-distribution with $df$ degrees of freedom. 
+(Yin, pg. 164-165)
+
+- use `t.test()` to do the calculations.
+
+# Power of the two-sample t-test
+
+The power of the test is
+
+$$1-\beta=1-P(t_{n_1+n_2-2, \gamma} \ge t_{n_1+n_2-2, \alpha/2})+P(t_{n_1+n_2-2, \gamma} < -t_{n_1+n_2-2, \alpha/2})$$
+
+The sample size can be solved from this equation which does not have a closed form.
+
+The sample size can be determined by specifying: 
+
+- type I and type II error rates, 
+- the standard deviation, 
+- the difference in treatment means that the clinical trial aims to detect.
+
+
+# Power of the two-sample t-test
+
+$$1-\beta=1-P(t_{n_1+n_2-2, \gamma} \ge t_{n_1+n_2-2, \alpha/2})+P(t_{n_1+n_2-2, \gamma} < -t_{n_1+n_2-2, \alpha/2})$$
+
+```{r,cache=TRUE}
+twosampttestpow <- function(alpha,n1,n2, mu1, mu2,sigma){
+delta <- mu1-mu2
+t.crit <-qt(1-alpha/2,n1+n2-2)
+t.gamma <- delta/(sigma*sqrt(1/n1+1/n2))
+t.power <- 1-pt(t.crit,n1+n2-2,ncp=t.gamma)+
+             pt(-t.crit,n1+n2-2,ncp=t.gamma)
+return(t.power)
+}
+```
+
+# Power of the two-sample t-test
+
+A clinical trial to test a new treatment against the standard treatment for colon cancer is being designed.  The investigators feel that the smallest meaningful difference in tumour growth is 1cm.  The standard deviation of tumour growth is 3cm.  The investigators feel that they can enrol 50 subjects per arm.  Will this clinical trial have adequate power to detect a difference between the treatments?
+
+- What are the parameters of interest?
+- What are the null and alternative hypotheses?
+- How can the power of the study be calculated?
+
+# Power of the two-sample t-test
+
+```{r,comment=""}
+twosampttestpow(.05,50,50,1,2,3)
+```
+
+# Power of the two-sample t-test
+
+- `power.t.test()` can calculate the number of subjects required to achieve a certain power.  
+- Suppose the investigators want to know how many subjects per group would have to be enrolled in each group to achieve 80% power under the same conditions?
+
+```{r,comment=""}
+power.t.test(power = 0.8,delta = 1,sd = 3,sig.level = 0.05)
+```
+
+
+# Power of the two-sample t-test
+The following plot shows power of the two-sample t-test as a function of the difference $\theta=\mu_1-\mu_2$ to be detected and equal sample size per group.
+
+```{r, echo=FALSE}
+# Study power as a function of theta and sample size
+pow <- power.t.test(n=50,delta=seq(0.01,2.5,by=0.1),sd=3,power=NULL,type="two.sample",alternative="two.sided",strict=T)
+plot(pow$delta,pow$power,type="l",main="Power of Two-Sample T-Test SD=3",xlab="theta",ylab="Power")
+pow <- power.t.test(n=30,delta=seq(0.01,2.5,by=0.1),sd=3,power=NULL,type="two.sample",alternative="two.sided",strict=T)
+points(pow$delta,pow$power,type="l",lty=2,col="blue")
+pow <- power.t.test(n=20,delta=seq(0.01,2.5,by=0.1),sd=3,power=NULL,type="two.sample",alternative="two.sided",strict=T)
+points(pow$delta,pow$power,type="l",lty=3,col="red")
+abline(a=0.8,b=0)
+legend("bottomright",legend=c("N=50","N=30","N=20"),lty=c(1,2,3),col=c("black","blue","red"))
+```
+
+
+# Power of the two-sample t-test
+
+This plot shows power as a function of $\sigma$ and sample size per group.
+
+```{r, echo=FALSE}
+# Power as a funtion of sample size and sd
+pow <- power.t.test(n=50,delta=1,sd=seq(1,3,by=0.1),power=NULL,type="two.sample",alternative="two.sided",strict=T)
+plot(pow$sd,pow$power,type="l",main="Power of Two-Sample T-Test",xlab="SD",ylab="Power")
+pow <- power.t.test(n=30,delta=1,sd=seq(1,3,by=0.1),power=NULL,type="two.sample",alternative="two.sided",strict=T)
+points(pow$sd,pow$power,type="l",lty=2,col="blue")
+pow <- power.t.test(n=20,delta=1,sd=seq(1,3,by=0.1),power=NULL,type="two.sample",alternative="two.sided",strict=T)
+points(pow$sd,pow$power,type="l",lty=3,col="red")
+abline(a=0.8,b=0)
+legend("topright",legend=c("N=50","N=30","N=20"),lty=c(1,2,3),col=c("black","blue","red"))
+```
+
+
+
+# Power of the two-sample t-test
+
+
+In some studies instead of specifying the difference in treatment means and standard deviation separately the ratio
+
+$$ES=\frac{\mu_1-\mu_2}{\sigma}$$
+
+can be specified.  
+
+- ES is called the scaled effect size.  
+- Cohen (1992)  suggests that effect sizes of 0.2, 0.5, 0.8 correspond to small, medium , and large effects respectively.
+
+# Power of the two-sample t-test
+
+Power as a function of effect size can be investigated.  
+
+```{r,comment="",warning=FALSE,echo=FALSE,cache=TRUE}
+pow.t <- function(theta){
+  alpha <-0.05
+  nA <- 10
+  nB <- 10
+  t.crit <-qt(1-alpha/2,nA+nB-2)
+  t.gamma <- theta/(sqrt(1/nA+1/nB))
+  t.power <- 1-pt(t.crit,nA+nB-2,ncp=t.gamma)+pt(-t.crit,nA+nB-2,ncp=t.gamma)
+  return(t.power)
+}
+```
+
+The plot shows that for $n_1=n_2=10$ the two-sample t-test has at least 80% power for detecting effect sizes that are at least 1.3.
+
+
+```{r,comment="",warning=FALSE,echo=FALSE,cache=TRUE, echo=FALSE, fig.height=3.5, fig.width=5, warning=FALSE, cache=TRUE, comment=""}
+
+x <- seq(-3,3,by=0.1)
+plot(x,pow.t(x),type="l",xlab="ES",ylab="power",main="Two-Sample T-Test Power and Effect Size, N=10")
+abline(v=+1.33,lty=2,col="red")  
+abline(v=-1.33,lty=2,col="red")  
+abline(h=0.8,lty=2,col="blue") 
+```
+
+
+
+# Sample size - known variance and equal allocation
+
+Allocation refers to: a clinical trial design strategy used to assign participants to an arm of a study. 
+
+If the variance is known then the test statistic is 
+
+$$ Z=\frac {{\bar Y}_1 - {\bar Y}_2}{\sigma \sqrt{(1/n_1+1/n_2)}} \sim N(0,1).$$
+
+This is the test statistic of the two-sample z-test.
+
+The power at $\theta=\theta_1$ is given by
+
+$$1-\beta= P\left( Z \ge z_{\alpha/2} - \frac{\theta_1}{\sigma \sqrt{1/n_1+1/n_2}}  \right) + P\left( Z < -z_{\alpha/2} - \frac{\theta_1}{\sigma \sqrt{1/n_1+1/n_2}}  \right).$$
+
+Ignoring terms smaller than $\alpha/2$ and combining positive and negative $\theta$
+
+$$\beta \approx \Phi\left( z_{\alpha/2} - \frac{\left|\theta_1\right|}{\sigma \sqrt{1/n_1+1/n_2}} \right).$$
+
+
+# Sample size - known variance and equal allocation
+
+
+The sample size is obtained by solving 
+
+$$z_{\beta}+z_{\alpha/2} = \left( \frac{\left|\theta_1\right|}{\sigma \sqrt{1/n_1+1/n_2}} \right).$$
+
+If we assume that there will be an equal allocation of subjects to each group then $n_1=n_2=n/2$, the total sample size for the phase III trial is
+
+$$ n= \frac {4\sigma^2 \left(z_{\beta}+z_{\alpha/2}\right)^2}{\theta^2}.$$
+
+
+# Sample size - known variance and unequal allocation
+
+- In many trials it is desirable to put more patients into the experimental group to learn more about this treatment.  
+
+- If the patient allocation between the two groups is $r=n_1/n_2$ then $n_1=r\cdot n_2$ then
+
+$$ n_2=\frac {(1+1/r)\sigma^2 \left(z_{\beta}+z_{\alpha/2}\right)^2} {\theta^2}.$$
+
+An R function to compute the sample size in groups 1 and 2 for unequal allocation is
+
+```{r,cache=TRUE}
+size2z.uneq.test <- function(theta,alpha,beta,sigma,r)
+{ zalpha <- qnorm(1-alpha/2)
+  zbeta <- qnorm(1-beta)
+  n2 <- (1+1/r)*(sigma*(zalpha+zbeta)/theta)^2
+  n1 <- r*n2
+  return(c(n1,n2))}
+```
+
+# Sample size - known variance and unequal allocation
+
+What is the sample size required for 90% power to detect $\theta=1$ with $\sigma=2$ at the 5% level in a trial where two patients will be enrolled in the experimental arm for every patient enrolled in the control arm? 
+
+
+```{r,comment=""}
+# sample size for theta =1, alpha=0.05, 
+# beta=0.1, sigma=2, r=2
+# group 1 sample size (experimental group)
+size2z.uneq.test(1,.05,.1,2,2)[1] 
+# group 2 sample size (control group)
+size2z.uneq.test(1,.05,.1,2,2)[2] 
+```
+
+# Sample size - known variance and unequal allocation
+
+The power of the two-sample z-test can be studied as a function of the allocation ratio $r$.  
+
+```{r,echo=FALSE}
+# power of z test as a function of allocation ratio r,
+# total sample size n, alpha, theta, and sigma
+pow.z.test <- function(r,n,alpha,theta,sigma)
+{
+  n2 <- n/(r+1)
+  x <- qnorm(1-alpha/2)-abs(theta)/(sigma*sqrt(1/(r*n2)+1/n2))
+  pow <- 1-pnorm(x)
+  return(pow)
+}
+
+plot(x = seq(.1,5,by=0.1),y = pow.z.test(seq(.1,5,by=0.1),168,.05,1,2),type="l",
+     xlab="Allocation ratio",ylab="Power",
+     main="Power vs. allocation ratio with total sample size fixed at \n n=168 alpha=0.05") 
+
+```
+
+The plot shows that imbalance typically leads to loss of power.   
+
+
+# Comparing Proportions for Binary Outcomes
+
+- In many clinical trials, the primary endpoint is dichotomous, for example, whether a patient has responded to the treatment, or whether a patient has experienced toxicity. 
+- Consider a two-arm randomized trial with binary outcomes. Let $p_1$ denote the response rate of the experimental drug, $p_2$ as that of the standard drug, and the difference is $\theta= p_1 — p_2$. 
+
+# Comparing Proportions for Binary Outcomes
+
+Let $Y_{ik}$ be the binary outcome for subject $i$ in arm $k$; that is,
+
+ $$Y_{ik} = \left\{
+	\begin{array}{ll}
+		1  & \mbox{with probability } p_k \\
+		0 & \mbox{with probability } 1-p_k,
+	\end{array}
+\right.$$
+
+for $i=1,...,n_k$ and $k=1,2$.  The sum of indendent and identically distributed Bernoulli random varaibles has a binomial distribution,
+
+$$ \sum_{i=1}^{n_k} Y_{ik} \sim Bin(n_k,p_k), \thinspace k=1,2.$$
+
+(Yin, pg. 173-174)
+
+# Comparing Proportions for Binary Outcomes
+
+The sample proportion for group $k$ is
+
+$${\hat p}_k={\bar Y}_k = (1/n_k)\sum_{i=1}^{n_k} Y_{ik}, \thinspace k=1,2,$$
+
+and $E\left( {\bar Y}_k\right)=p_k$ and $Var\left({\bar Y}_k \right)=\frac{p_k(1-p_k)}{n_k}$.
+
+The goal of the clinical trial is to determine if there is a difference between the two groups using a binary endpoint.  That is we want to test $H_0: \theta=0$ versus $H_0: \theta \ne 0.$ 
+
+The test statistic (assuming that $H_0$ is true) is:
+
+$$T = \frac {{\hat p}_1-{\hat p}_2} {\sqrt{p_1(1-p_1)/n_1+p_2(1-p_2)/n_2}} \sim N(0,1),$$
+
+# Comparing Proportions for Binary Outcomes
+
+The test rejects at level $\alpha$ if and only if
+
+$$\left|T\right| \ge z_{\alpha/2}.$$
+
+
+Using the same argument as the case with continuous endpoints and ignoring terms smaller than $\alpha/2$ we can solve for $\beta$
+
+
+$$\beta \approx \Phi\left( z_{\alpha/2}- \frac{|\theta_1|}{\sqrt{p_1(1-p_1)/n_1+p_2(1-p_2)/n_2}}   \right).$$
+
+# Comparing Proportions for Binary Outcomes
+
+Using this formula to solve for sample size. If $n_1=r \cdot n_2$ then
+
+$$n_2= \frac {\left(z_{\alpha/2}+z_{\beta}\right)^2}{\theta^2} \left(p_1(1-p_1)/r+p_2(1-p_2) \right). $$
+
+# Comparing Proportions for Binary Outcomes
+
+- The built-in R function `power.prop.test()` can be used to calculate sample size or power.  
+- For example suppose that the standard treatment for a disease has a response rate of 20%, and an experimental treatment is anticipated to have a response rate of 28%.  
+- The researchers want both arms to have an equal number of subjects.  How many patients should be enrolled if the study will conduct a two-sided test at the 5% level with 80% power?
+
+```{r,comment=""}
+power.prop.test(p1 = 0.2,p2 = 0.25,power = 0.8)
+```
+
+# Calculating Power by Simulation
+
+- If the test statistic and distribution of the test statistic are known then the power of the test can be calculated via simulation.
+
+- Consider a two-sample t-test with 30 subjects per group and the standard deviation of the clinical outcome is known to be 1.  
+
+- What is the power of the test $H_0:\mu_1-\mu_2=0$ versus $H_0:\mu_1-\mu_2=0.5$, at the 5% significance level?
+
+- The power is the proportion of times that the test correctly rejects the null hypothesis in repeated sampling.
+
+
+# Calculating Power by Simulation
+
+We can simulate a single study using the `rnorm()` command.  Let's assume that $n_1=n_2=30, \mu_1=3.5, \mu_2=3, \sigma=1, \alpha=0.05$.
+
+```{r,comment=""}
+set.seed(2301)
+t.test(rnorm(30,mean=3.5,sd=1),rnorm(30,mean=3,sd=1),var.equal = T)
+```
+
+Should you reject $H_0$?
+
+# Calculating Power by Simulation
+
+- Suppose that 10 studies are simulated.  
+- What proportion of these 10 studies will reject the null hypothesis at the 5% level?  
+- To investigate how many times the two-sample t-test will reject at the 5% level the `replicate()` command will be used to generate 10 studies and calculate the p-value in each study.  
+- It will still be assumed that $n_1=n_2=30, \mu_1=3.5, \mu_2=3, \sigma=1, \alpha=0.05$.
+
+```{r,comment=""}
+set.seed(2301)
+pvals <- replicate(10,t.test(rnorm(30,mean=3.5,sd=1),
+                             rnorm(30,mean=3,sd=1),
+                             var.equal = T)$p.value)
+pvals # print out 10 p-values
+#power is the number of times the test rejects at the 5% level
+sum(pvals<=0.05)/10 
+```
+
+# Calculating Power by Simulation
+
+But, since we only simulated 10 studies the estimate of power will have a large standard error.  So let's try simulating 10,000 studies so that we can obtain a more precise estimate of power.  
+
+
+```{r,comment=""}
+set.seed(2301)
+pvals <- replicate(10000,t.test(rnorm(30,mean=3.5,sd=1),
+                                rnorm(30,mean=3,sd=1),
+                             var.equal = T)$p.value)
+sum(pvals<=0.05)/10000 
+```
+
+# Calculating Power by Simulation
+
+This is much closer to the theoretical power obtained from `power.t.test()`.
+
+```{r,comment=""}
+power.t.test(n = 30,delta = 0.5,sd = 1,sig.level = 0.05)
+```
+
+# Calculating Power by Simulation
+
+- The built-in R functions `power.t.test()` and `power.prop.test()` don't have an option for calculating power where the there is unequal allocation of subjects between groups.  
+
+- One option is to simulate power for the scenarios that are of interest. Another option is to write your own function using the formula derived above. 
+
+# Calculating Power by Simulation
+
+- Suppose the standard treatment for a disease has a response rate of 20%, and an experimental treatment is anticipated to have a response rate of 28%.  
+- The researchers want both arms to have an equal number of subjects.  
+- A power calculation above revealed that the study will require 1094 patients for 80% power.  
+- What would happen to the power if the researchers put 1500 patients in the experimental arm and 500 patients in the control arm?
+
+# Calculating Power by Simulation
+
+- The number of subjects in the experimental arm that have a positive response to treatment will be an observation from a $Bin(1500,0.28)$. 
+- The number of subjects that have a positive response to the standard treatment will be an observation from a $Bin(500,0.2)$.  
+- We can obtain simulated responses from these distributions using the `rbinom()` command in R.
+
+```{r,comment=""}
+set.seed(2301)
+rbinom(1,1500,0.28)
+rbinom(1,500,0.20)
+```
+
+# Calculating Power by Simulation
+
+- The p-value for this simulated study can be obtained using `prop.test()`.
+
+```{r,comment=""}
+set.seed(2301)
+prop.test(x=c(rbinom(1,1500,0.28),rbinom(1,500,0.20)),
+          n=c(1500,500),correct = F)
+```
+
+# Calculating Power by Simulation
+
+- A power simulation repeats this process a large number of times.   
+- In the example below we simulate 10,000 hypothetical studies to calculate power.
+
+```{r,comment=""}
+set.seed(2301)
+pvals <- replicate(10000,
+prop.test(x=c(rbinom(n = 1,size = 1500,prob = 0.25),          
+              rbinom(n=1,size=500,prob=0.20)),
+              n=c(1500,500),correct=F)$p.value)
+sum(pvals<=0.05)/10000
+```
+
+If the researchers decide to have a 3:1 allocation ratio of patients in the treatment to control arm then the power will be _____?
+

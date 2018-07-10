@@ -1,0 +1,67 @@
+---
+title: 'STA305/1004 - Homework #4'
+output:
+  word_document: default
+  pdf_document:
+    keep_tex: yes
+date: 'Due Date: April 5, 2017'
+---
+
+**Due date:** Electronic submission via Crowdmark by Wednesday, April 5, 2017 at 22:00. NB: e-mail submissions will NOT be accepted.  DO NOT SUBMIT MULTIPLE DOCUMENTS (E.G., ONE DOCUMENT WITH A DESCRIPTION AND ANOTHER WITH GRAPHS)
+
+Each student (no groups allowed) will plan and perform a homemade factorial experiment.  This includes collecting and analyzing the data in R.  I leave it to each individual student to decide what he or she wants to study.  The number of possible topics is very large.  It’s very important you pick a topic that you are interested in and will enjoy working on.  
+
+STA1004 students:  If you are working on a research project where a factorial design can be implemented then I encourage you to use this project as your topic. 
+
+The report should not be longer than 4 pages including tables and plots and be **submitted in one document**.  An example report can be found on portal.  Feel free to use this report as a template.
+
+
+The report should include the following three sections:
+
+# Description of the design. (One page maximum)
+  
+The design should be a replicated or unreplicated full or fractional factorial experiment.  Include details on how and why you conducted the experiment.  What do you hope to learn by doing this experiment?  You may want to include a small picture of your experimental apparatus if it will help your description.
+
+Grade:
+
+5 – Excellent:  Strong evidence of original thinking and a clear explanation of how and why they conducted the experiment.
+
+4- Good: Grasped the basics of designing a factorial study; a good explanation of how and why they did the experiment.
+
+3- Adequate: Understood the basics of designing a factorial study, but may not have designed a factorial experiment.  Provided an adequate explanation of the design.
+
+2- Marginal: Some evidence of understanding the basic design of a factorial study.  Provided a poor explanation of their design.
+
+1- Inadequate: Little evidence of even a superficial understanding of a factorial design.  Little explanation about how or why the design was chosen.
+ 
+# Analysis of the data.  (Two pages maximum)
+
+Include appropriate plots and calculations such as: main effects and interactions; estimated variance of the effect (if replicated); confidence intervals for true values of effects (if replicated); Lenth plot; or half normal plot.
+
+Grade:
+
+5 – Excellent:  Strong evidence of data analysis skills.  Probably used R to do calculations and plots, but calculations and plots might also be done neatly by hand.
+
+4- Good:  Good evidence of data analysis skills.  Appropriate calculations were done, and maybe appropriate plots were included.
+
+3- Adequate: Understood the basics of required data analysis.  
+
+2- Marginal: Some evidence of understanding the basic data analysis required, but might not have carried out all the appropriate calculations and plots.
+
+1- Inadequate: Little evidence of even a superficial understanding of the data analysis required to analyse a factorial design.  
+
+# Conclusions.  (One page maximum)
+
+What conclusions can you make based on the results of your experiment?  Write a paragraph or two outlining these conclusions.
+
+Grade:
+
+5 – Excellent:  Conclusions are highly appropriate given the experiment conducted.  Clearly written.
+
+4- Good:  Conclusions are appropriate given the experimental context.  Writing is good.
+
+3- Adequate: Some conclusions are appropriate; other obvious conclusions might be missing.  
+
+2- Marginal: Some evidence that there was an understanding of the basic conclusions, but several obvious conclusions not stated.
+
+1- Inadequate: Little evidence of even a superficial understanding of the conclusions that can be drawn from the experiment. 

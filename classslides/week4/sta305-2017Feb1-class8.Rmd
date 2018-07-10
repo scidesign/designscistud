@@ -1,0 +1,467 @@
+---
+title: "STA 305/1004 - Class 8"
+date: "February 1, 2017"
+output: 
+  beamer_presentation: 
+    incremental: yes
+fontsize: 9pt
+---
+
+# Today's Class
+
+- Introduction to causal inference
+- The fundemental problem of causal inference
+- The assignment mechanism
+- Getting around the fundemental problem
+- SUTVA
+- Omitted variable bias in regression
+- Observational studies
+- Ignorable treatment assignment
+
+
+# Introduction to causal inference - Bob's headache
+
+- Suppose Bob, at a particular point in time, is contemplating whether or not to take an aspirin for a headache. 
+
+- There are two treatment levels, taking an aspirin, and not taking an aspirin. 
+
+- If Bob takes the aspirin, his headache may be gone, or it may remain, say, an hour later; we denote this outcome, which can be either “Headache” or “No Headache,” by $Y(\text{Aspirin})$.  
+
+- Similarly, if Bob does not take the aspirin, his headache may remain an hour later, or it may not; we denote this potential outcome by $Y(\text{No Aspirin})$, which also can be either “Headache,” or “No Headache.” 
+
+- There are therefore two potential outcomes, $Y(\text{Aspirin})$ and $Y(\text{No Aspirin})$, one for each level of the treatment. The causal effect of the treatment involves the comparison of these two potential outcomes.
+
+# Introduction to causal inference - Bob's headache
+
+Because in this example each potential outcome can take on only two values, the unit- level causal effect – the comparison of these two outcomes for the same unit – involves one of four (two by two) possibilities:
+
+
+1. Headache gone only with aspirin:
+ Y(Aspirin) = No Headache, Y(No Aspirin) = Headache
+2. No effect of aspirin, with a headache in both cases: 
+Y(Aspirin) = Headache, Y(No Aspirin) = Headache
+3. No effect of aspirin, with the headache gone in both cases: Y(Aspirin) = No Headache, Y(No Aspirin) = No Headache
+4. Headache gone only without aspirin:
+Y(Aspirin) = Headache, Y(No Aspirin) = No Headache
+
+# Introduction to causal inference - Bob's headache
+
+
+There are two important aspects of this definition of a causal effect. 
+
+1. The definition of the causal effect depends on the potential outcomes, but it does not depend on which outcome is actually observed. 
+
+2. The causal effect is the comparison of potential outcomes, for the same unit, at the same moment in time post-treatment. 
+
+- The causal effect is not defined in terms of comparisons of outcomes at different times, as in a before-and-after comparison of my headache before and after deciding to take or not to take the aspirin. 
+
+# The fundemental problem of causal inference
+
+“The fundamental problem of causal inference” (Holland, 1986, p. 947) is the problem that at most one of the potential outcomes can be realized and thus observed. 
+
+- If the action you take is Aspirin, you observe $Y(\text{Aspirin})$ and will never know the value of $Y(\text{No Aspirin})$ because you cannot go back in time. 
+
+- Similarly, if your action is No Aspirin, you observe $Y(\text{No Aspirin})$ but cannot know the value of $Y(\text{Aspirin})$.  
+
+- In general, therefore, even though the unit-level causal effect (the comparison of the two potential outcomes) may be well defined, by definition we cannot learn its value from just the single realized potential outcome. 
+
+# The fundemental problem of causal inference
+
+
+The outcomes that would be observed under control and treatment conditions are often called **counterfactuals** or **potential outcomes**.
+
+- If Bob took asprin for his headache then he would be assigned to the treatment condition so $T_i = 1$. 
+
+- Then $Y(\text{Aspirin})$ is observed and $Y(\text{No Aspirin})$ is the unobserved counterfactual outcome—it represents what would have happened to Bob if he had not taken aspirin. 
+
+- Conversely, if Bob had not taken aspirin then $Y(\text{No Aspirin})$ is observed and $Y(\text{Aspirin})$ is counterfactual. 
+
+- In either case, a simple treatment effect for Bob can be defined as
+$$ \mbox{treatment effect for Bob }= Y(\text{Aspirin})-Y(\text{No Aspirin}).$$
+
+- The problem is that we can only observe one outcome.
+
+# The assignment mechanism
+
+- **Assignment mechanism:** The process for deciding which units receive treatment and which receive control. 
+- **Ignorable Assignment Mechanism:** The assignment of treatment or control for all units is independent of the unobserved potential outcomes (“nonignorable” means not ignorable)
+- **Unconfounded Assignment Mechanism:** The assignment of treatment or control for all units is independent of all potential outcomes, observed or unobserved (“confounded” means not unconfounded)
+
+# The assignment mechanism
+
+- Suppose that a doctor prescribes surgery (labeled 1) or drug (labeled 0) for a certain condition.  
+- The doctor knows enough about the potential outcomes of the patients so assigns each patient the treatment that is more beneficial to that patient.
+
+unit         |  $Y_i(0)$  | $Y_i(1)$   |$Y_i(1) - Y_i(0)$   
+-------------|------------|------------|-----------------
+patient #1   |    1       |  7         |       6
+patient #2   |    6       |  5         |      -1
+patient #3   |    1       |  5         |       4
+patient #4   |    8       |  7         |      -1
+Average      |    4       |  6         |       2
+
+$Y$ is years of post-treatment survival. 
+
+# The assignment mechanism
+
+- Patients 1 and 3 will receive surgery and patients 2 and 4 will receive drug treatment.
+- The observed treatments and outcomes are in this table.
+
+unit         |   $T_i$    | $Y_i^{obs}$ | $Y_i(1)$   |$Y_i(0)$ 
+-------------|------------|-------------|------------|--------
+patient #1   |      1     |  7          |            |        
+patient #2   |      0     |  6          
+patient #3   |      1     |  5         
+patient #4   |      0     |  8         
+**Average Drug** |            |  **7**
+**Average Surg** |            |  **6**
+
+- This shows that we can reach invalid conclusions if we look at the observed values of potential outcomes without considering how the treatments were assigned.
+- The assignment mechanism depended on the potential outcomes and was therefore nonignorable (implying that it was confounded).
+
+# The assignment mechanism
+
+The observed difference in means is entirely misleading in this situation. The biggest problem when using the difference of sample means here is that we have effectively pretended that we had an unconfounded treatment assignment when in fact we did not. This example demonstrates the importance of finding a statistic that is appropriate for the actual assignment mechanism.
+
+# The assignment mechanism
+
+Is the treatment assignment ignorable?
+
+- The doctor knows enough about the potential outcomes of the patients so assigns each patient the treatment that is more beneficial to that patient.
+- Suppose that a doctor prescribes surgery (labeled 1) or drug (labeled 0) for a certain condition by tossing a biased coin that depends on $Y(0)$ and $Y(1)$, where $Y$ is years of post-treatment survival.  
+- If $Y(1) \ge Y(0)$ then $P(T_i=1|Y_i(0),Y_i(1))=0.8.$
+- If $Y(1) < Y(0)$ then $P(T_i=1|Y_i(0),Y_i(1))=0.3.$
+
+
+unit         |$Y_i(0)$| $Y_i(1)$| $p_1$                   |$p_0$   
+-------------|--------|---------|-------------------------|------------------------
+patient #1   |    1   |  7      |      0.8                | 0.2
+patient #2   |    6   |  5      |      0.3                | 0.7
+patient #3   |    1   |  5      |      0.8                | 0.2
+patient #4   |    8   |  7      |      0.3                | 0.7
+
+where, $p_1 =P(T_i=1|Y_i(0),Y_i(1))$,and $p_0=P(T_i=0|Y_i(0),Y_i(1))$. 
+ 
+
+
+
+# Weight gain study
+
+From Holland and Rubin (1983).
+
+“A large university is interested in investigating the effects on the students of the diet provided in the university dining halls and any sex differences in these effects. Various types of data are gathered. In particular, the weight of each student at the time of his [or her] arrival in September and his [or her] weight the following June are recorded.”
+
+- The average weight for Males was 180 in both September and June. Thus, the average weight gain for Males was zero.
+- The average weight for Females was 130 in both September and June. Thus, the average weight gain for Females was zero.
+- Question: What is the differential causal effect of the diet on male weights and on female weights?
+- Statistician 1: Look at gain scores: No effect of diet on weight for either males or females, and no evidence of differential effect of the two sexes, because no group shows any systematic change.
+- Statistician 2: Compare June weight for males and females with the same weight in September: On average, for a given September weight, men weigh more in June than women. Thus, the new diet leads to more weight gain for men.
+- Is Statistician 1 correct? Statistician 2? Neither? Both?
+
+# Weight gain study
+
+Questions:
+
+1. What are the units?
+2. What are the treatments?
+3. What is the assignment mechanism?
+4. Is the assignment mechanism useful for causal inference?
+5. Would it have helped if all males received the dining hall diet and all females received the control diet? 
+6. Is Statistician 1 or Statistician 2 correct?
+
+# Getting around the fundemental problem by using close substitutes
+
+- Are there situations where you can measure both $Y_i^0$ and $Y_i^1$ on the same unit?
+- Drink tea one night and milk another night then measure the amount of sleep.  What has been assumed?
+- Divide a piece of plastic into two parts then expose each piece to a corrosive chemical.  What has been assumed?
+-  Measure the effect of a new diet by comparing your weight before the diet and your weight after.  What has been assumed?
+- There are strong assumptions implicit in these types of strategies.
+
+# Getting around the fundemental problem by using randomization and experimentation
+
+- The “statistical” idea of using the outcomes observed on a sample of units to learn about the distribution of outcomes in the population.
+- The basic idea is that since we cannot compare treatment and control outcomes for the same units, we try to compare them on similar units. 
+- Similarity can be attained by using randomization to decide which units are assigned to the treatment group and which units are assigned to the control group. 
+
+# Getting around the fundemental problem by using randomization and experimentation
+
+- It is not always possible to achieve close similarity between the treated and control groups in a causal study. 
+- In observational studies, units often end up treated or not based on characteristics that are predictive of the outcome of interest (for example, men enter a job training program because they have low earnings and future earnings is the outcome of interest). 
+- Randomized experiments can be impractical or unethical.
+- When treatment and control groups are not similar, modeling or other forms of statistical adjustment can be used to fill in the gap. 
+
+# Fisherian Randomization Test
+
+- The randomization test is related to a stochastic proof by contradiction giving the plausability of the null hypothesis of no treatment effect.
+- The null hypothesis is $Y_i^0=Y_i^1$, for all units.
+- Under the null hypothesis all potential outcomes are known from $Y^{obs}$ since $Y^{obs}=Y^1=Y^0$.
+- Under the null hypothesis, the observed value of any statistic, such as ${\bar y}^1-{\bar y}^0$ is known for all possible treatment assignments.
+- The randomization distribution of ${\bar y}^1-{\bar y}^0$ can then be obtained.
+- Unless the data suggest that the null hypothesis of no treatment effect is false then it's difficult to claim evidence that the treatments are different.
+
+# Stable Unit Treatment Value Assumption (SUTVA)
+
+To learn about causal effects through multiple experimental units assumptions are required.
+
+**The assumption.** The potential outcomes for any unit do not vary with the treatments assigned to other units, and, for each unit, there are no different forms or versions of each treatment level, which lead to different potential outcomes.
+
+# Stable Unit Treatment Value Assumption (SUTVA)
+
+
+- Involves assuming that treatments applied to one unit do not affect the outcome for another unit. 
+
+- For example, if Adam and Oliver are in different locations and have no contact with each other, it would appear reasonable to assume that if Oliver takes an an aspirin for his headache then his behaviour has no effect on the status of Adam's headache. 
+- This assumption might not  hold if Adam and Oliver are in the same location, and Adam's behavior, affects Oliver's behaviour.  
+- SUTVA incorporates the idea that Adam and Oliver do not interfere with one another and the idea that for each unit there is only a single version of each treatment level (e.g., there is only one dose of aspirin). (Imbens and Rubin, 2015)
+
+# Electric company study
+
+The following example is from Gelman and Hill (2007). 
+
+An educational experiment performed on four elementary school classes (grades 1-4) was conducted. 
+
+- **Treatment:** Exposure to a new educational television show called The Electric Company. 
+
+- **Treatment assignment:** Classes were randomized into treated and control groups. 
+
+-  **Primary study outcome:** At the end of the school year, students in all the classes were given a reading test, and the average test score within each class was recorded. 
+
+A pre-test was given at the beginning of the school year before the treatment.  For grade 1 the pre-test was a subset of the longer post-test and in grades 2-4 the pre-test was the same as the post-test.
+
+# Electric company study
+
+The distribution of scores are shown for each treatment and control groups for each grade.
+
+```{r,echo=FALSE, comment="",message=FALSE,cache=TRUE, warning=FALSE}
+electric <- read.csv("~/Dropbox/Docs/sta305/Articles/HillGelman/Book_Codes/Ch.9/electric.dat", sep="")
+library("arm")
+attach(electric)
+onlytext <- function(string){
+  plot(0:1, 0:1, bty='n', type='n', xaxt='n', yaxt='n', xlab='', ylab='')
+  text(0.5, 0.5, string, cex=1.2, font=2)
+}
+nf <- layout (matrix(c(0,1:14), 5, 3, byrow=TRUE), c(5, 10, 10),
+             c(1, 5, 5, 5, 5), TRUE)
+par (mar=c(.2,.2,.2,.2))
+onlytext ('Test scores in control classes')
+onlytext ('Test scores in treated classes')
+
+par (mar=c(1,1,1,1), lwd=0.7)
+for (j in 1:4){
+  onlytext(paste ('Grade', j))
+  hist (control.Posttest[Grade==j], breaks=seq(0,125,5), xaxt='n', yaxt='n',
+    main=NULL, col="gray", ylim=c(0,10))
+  axis(side=1, seq(0,125,50), line=-.25, cex.axis=1, mgp=c(1,.2,0), tck=0)
+  text (2, 6.5, paste ("mean =", round (mean(control.Posttest[Grade==j]))), adj=0)
+  text (2, 5, paste ("  sd =", round (sd(control.Posttest[Grade==j]))), adj=0)
+
+  hist (treated.Posttest[Grade==j], breaks=seq(0,125,5), xaxt='n', yaxt='n',
+    main=NULL, col="gray", ylim=c(0,10))
+  axis(side=1, seq(0,125,50), line=-.25, cex.axis=1, mgp=c(1,.2,0), tck=0)
+  text (2, 6.5, paste ("mean =", round (mean(treated.Posttest[Grade==j]))), adj=0)
+  text (2, 5, paste ("  sd =", round (sd(treated.Posttest[Grade==j]))), adj=0)
+}
+```
+
+
+
+# Electric company study
+
+The average causal effect of the treatment is the coefficient in the regression
+
+$$ y_i=\beta_0+\beta_1T_i+\epsilon_i,$$
+
+for each grade.  
+
+
+
+```{r,comment="",message=FALSE,eval=FALSE,echo=FALSE}
+attach(electric)
+post.test <- c (treated.Posttest, control.Posttest)
+grade <- rep (Grade, 2)
+treatment <- rep (c(1,0), rep(length(treated.Posttest),2))
+
+for (k in 1:4){
+  cat("Grade:",k, "\n")
+  print(summary((lm (post.test ~ treatment, subset=(grade==k)))))
+  print(confint(lm (post.test ~ treatment, subset=(grade==k))))
+}
+```
+
+
+# Electric company study
+
+
+```{r,comment="",message=FALSE,echo=FALSE}
+attach(electric)
+post.test <- c (treated.Posttest, control.Posttest)
+grade <- rep (Grade, 2)
+treatment <- rep (c(1,0), rep(length(treated.Posttest),2))
+  cat("Grade:",1, "\n")
+  print(confint(lm (post.test ~ treatment, subset=(grade==1))))
+  cat("Grade:",2, "\n")
+  print(confint(lm (post.test ~ treatment, subset=(grade==2))))
+  cat("Grade:",3, "\n")
+  print(confint(lm (post.test ~ treatment, subset=(grade==3))))
+  cat("Grade:",4, "\n")
+  print(confint(lm (post.test ~ treatment, subset=(grade==4))))
+```
+
+# Electric company study
+
+What does the model
+
+$$ y_i=\beta_0+\beta_1T_i+\epsilon_i,$$
+
+assume about pre-test scores?
+
+
+# Omitted variable bias in regression
+
+Suppose that the following model is correct
+
+
+$$y_i =\beta_0 +\beta_1T_i +\beta_2x_i +\epsilon_i,$$
+
+
+where $x_i$ is the $i^{th}$ pre-test score.
+
+Assume that the confounding covariate, $x_i$, is ignored and we fit the model 
+
+$$y_i = \beta_0^{*} + \beta_1^{*} T_i + \epsilon_i^{*}.$$
+
+
+What is the relation between these models?
+
+# Electric company study
+
+The pre-test can be controlled by fitting the model:
+
+$$ y_i=\beta_0+\beta_1T_i+\beta_2x_i+\epsilon_i,$$
+
+where $x_i$ is the pre-test.
+
+```{r,comment="",message=FALSE,cache=TRUE,eval=FALSE}
+attach(electric)
+post.test <- c (treated.Posttest, control.Posttest)
+pre.test <- c (treated.Pretest, control.Pretest)
+grade <- rep (Grade, 2)
+treatment <- rep (c(1,0), rep(length(treated.Posttest),2))
+
+for (k in 1:4){
+  cat("Grade:",k, "\n")
+  print(summary((lm (post.test ~ treatment+pre.test, subset=(grade==k)))))
+  print(confint(lm (post.test ~ treatment+pre.test, subset=(grade==k))))
+}
+```
+
+# Electric company study
+
+
+```{r,comment="",message=FALSE,cache=TRUE,echo=FALSE}
+attach(electric)
+post.test <- c (treated.Posttest, control.Posttest)
+pre.test <- c (treated.Pretest, control.Pretest)
+grade <- rep (Grade, 2)
+treatment <- rep (c(1,0), rep(length(treated.Posttest),2))
+
+for (k in 1:4){
+  cat("Grade:",k, "\n")
+  #print(summary((lm (post.test ~ treatment+pre.test, subset=(grade==k)))))
+  print(confint(lm (post.test ~ treatment+pre.test, subset=(grade==k))))
+}
+```
+
+
+# Observational Studies
+
+- A solution to the fundamental problem of causal inference is, as we have described, to randomly sample a different set of units for each treatment group assignment from a common population, and then apply the appropriate treatments to each group; or
+
+- Randomly assign the treatment conditions among a selected set of units. Both approaches are supposed to guaruntee that, on average, the different treatment groups are balanced. In other words, $\bar y^0$ and $\bar y^1$ from the sample are estimating the average outcomes under control and treatment for the same population.
+
+# Observational Studies
+
+- In observational studies treatments are observed rather than assigned (e.g., comparison of lung cancer rates in smokers to nonsmokers), and the observed data under different treatments is usually not a random sample from a common population.
+
+- In an observational study there might be systematic differences between groups of units, outside the control of the experimenter, that receive different treatments that can affect the outcome, $y$. 
+
+# Observational Studies
+
+- The educational experiment described above had an embedded observational study. 
+- Once the treatments had been assigned, the teacher for each class assigned to the Electric Company treatment chose to either replace or supplement the regular reading program with the Electric Company television show. 
+- All the classes in the treatment group watched the show, but some watched it instead of the regular reading program and others got it in addition.
+
+# Observational Studies
+
+- Let's assume that the choice between the two treatment options—“replace” or “supplement”—to be randomly assigned conditional on pre-test scores. 
+- This is a strong assumption but we use it simply as a starting point. We can then estimate the treatment effect by regression, as with an actual experiment. 
+
+
+```{r,message=FALSE,comment="",eval=FALSE,echo=FALSE}
+attach(electric)
+supp <- c(as.numeric(electric[,"Supplement."])-1, rep(NA,nrow(electric)))
+# supp=0 for replace, 1 for supplement, NA for control
+
+est1 <- rep(NA,4)
+se1 <- rep(NA,4)
+for (k in 1:4){
+  ok <- (grade==k) & (!is.na(supp))
+  cat("Grade:",k, "\n")
+  print(summary(lm (post.test ~ supp + pre.test, subset=ok)))
+  print(confint(lm (post.test ~ supp + pre.test, subset=ok)))
+}
+```
+
+
+
+# Observational Studies
+
+```{r,message=FALSE,comment="",echo=FALSE}
+attach(electric)
+supp <- c(as.numeric(electric[,"Supplement."])-1, rep(NA,nrow(electric)))
+# supp=0 for replace, 1 for supplement, NA for control
+
+est1 <- rep(NA,4)
+se1 <- rep(NA,4)
+for (k in 1:4){
+  ok <- (grade==k) & (!is.na(supp))
+  cat("Grade:",k, "\n")
+  #print(summary(lm (post.test ~ supp + pre.test, subset=ok)))
+  print(confint(lm (post.test ~ supp + pre.test, subset=ok)))
+}
+```
+
+
+
+
+# Ignorable Treatment Assignment
+
+- The observational study of replace or supplement was treated as a completely randomized experiment and an estimate of the treatment effect was calculated.  
+- What has been assumed?  
+- The distribution of classes across the treatment variable (replace/supplement) is random with respect to the potential outcomes.  
+- This is almost correct, since the regression adjusts for pre-test scores.  
+- So, the distribution of classes with respect to potential outcomes is random across the treatment groups *conditional* on the confounding covariate pre-test.  
+
+# Strongly ignorable Treatment Assignment
+
+
+If treatment assignment $T$ is conditionally independent of $y^0, y^1$ given confounding covariates $X$ and and $0<P(T=1|y^0,y^1,X)<1$ then the treatment assignment is said to be **strongly ignorable**. 
+
+$$y^0,y^1 \bot T | X.$$
+
+This means that the conditional distribution of potential responses is the same across levels of the treatment variable once we condition on the confounding covariates $X$.  
+
+Another way to view ignorability is:
+
+$$P(T=1|y^0,y^1,X)=P(T=1|X).$$
+
+# Strongly ignorable Treatment Assignment
+
+- Imagine that two grade 1 classes have the same average pre-test scores.  
+- A coin toss might determine which of these two classes would get replacement or supplement.  
+- This doesn't mean that any two classes will have the same probability of receiving the suplement.  
+- The ignorability assumption means that if we want to interpret the regression coefficient for treatment as an average causal effect then all the counfounding covariates should be controlled for in the regression model.
+
+
+
+

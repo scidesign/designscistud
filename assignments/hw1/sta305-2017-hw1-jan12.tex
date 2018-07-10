@@ -1,0 +1,159 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}   
+                		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+\usepackage{amsmath,amsthm}
+\title{STA305/1004 (L0101/L0201) Winter 2017 -  Homework 1}
+\author{}
+\date{}							% Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+%\section{}
+%\subsection{}
+
+%{\noindent \bf \Large Instructions} \\
+
+{\noindent {\bf Due Date: Friday, January 27, 2017 at 22:00.}
+\begin{itemize}
+\item E-mail submissions will NOT be accepted.
+\item You will be required to submit the assignment via Crowdmark.
+\item A Crowdmark submission link will be sent to you via your UofT email.  Please check your UofT e-mail account for this link.   The link will be ready during the week of January 16, 2017.
+\end{itemize}
+} 
+
+
+{\noindent \bf If you work with other students on this assignment then:}  
+\begin{itemize}
+\item Indicate the names of the students on your solutions;  
+\item Your solutions must be written up independently (i.e., your solutions should not be the same as another students solutions).
+\end{itemize}
+
+%{\bf \noindent \Large Answer all of the following questions.}
+
+\newpage
+
+\begin{enumerate}
+
+\item A scientist has two light objects to weigh.  She decides to use an old fashioned pan balance scale in the lab since she heard about a design from a colleague that is supposed to increase the accuracy of her measurements and take less time.  
+
+The scientist decides to obtain weight measurements using the following design ({\bf{DESIGN I}}):
+
+\begin{itemize}
+\item weigh the two objects together in one pan;
+\item weigh one object in one pan, and the other object in the other pan;
+\item pick one of two objects, and weigh it.
+\end{itemize}
+
+In a pan balance scale when one object is in one pan and another object is in another pan the measurement obtained is the difference in weight between the two objects.
+
+Let $y_1,y_2,y_3$ be the readings from the scale, and $\beta_1$ the weight of the object that has been on the scale through all three weighings and $\beta_2$ the other object. The standard deviation of each weighing is denoted by  $\sigma$.  
+
+Answer the following questions.
+
+\begin{enumerate}
+
+\item Write three equations relating the observed weights $y_1,y_2,y_3$ to the unknown weights $\beta_1,\beta_2$.  Make sure to include an appropriate error term and any necessary assumptions about the error term. 
+\item Find the least-squares estimates of $\beta_1,\beta_2$.
+\item Find the standard error of the least-squares estimates of $\beta_1,\beta_2$.
+\item If the scientist measured each object three times could she achieve the same precision (standard error) as this design?  Explain. 
+
+\item ({\bf DESIGN II}) Suppose that instead of the design above the scientist uses the following design.
+
+\begin{itemize}
+\item weigh both objects in one pan together twice;
+\item weigh the objects in opposite pans.
+\end{itemize}
+
+
+
+{\bf Question:}  Find the least-squares estimates of the weights and standard error of the weights using this design.  
+
+\item Does {\bf DESIGN II} determine the weights of the objects with equal precison compared to {\bf DESIGN I}?  Explain your reasoning.
+
+\end{enumerate}
+
+\newpage
+
+\item Ten thousand users of an e-commerce web site were randomly allocated over a one-day period to see if a new version of the website (B) would lead to increased sales compared to the existing version of the web page (A).   The data is in the file \texttt{ABtest.csv}.  The column labeled {\it page} indicates which website the user viewed and the column labelled {\it sales} indicates sales in Canadian dollars.
+
+
+Answer the following questions using R. 
+
+\begin{enumerate}
+\item  How many values does the randomization distribution of the difference in median sales between the two web pages contain?  
+\item  Create a histogram of this randomization distribution.  What is the randomization P-value of your test? {\bf (Hand in your R code and output for this part)}
+\item  Is there evidence of a significant difference in sales?  Explain your answer including how you define `significant'. {\bf (Hand in your R code and output for this part)}
+
+
+\end{enumerate}
+
+
+%\item  Suppose that 13 plants are set out in a single row.  Six plants are given fertilizer mix A and seven plants are given fertilizer mix B.  The A's and B's are randomly applied to the plants along the row.  The random arrangement was obtained by taking thirteen cards where six are marked A and seven are marked B.  After shuffling the cards several times the following arrangement was obtained:
+
+%\begin{table}[htdp]
+%\begin{center}
+%\begin{tabular}{r|r|c|c|c|c|c|c|c|c|c|c|c|c}
+%Position in row & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 &10 & 11 & 12 &13 \\ \hline
+%Fertilizer & B & B & B & B & B & A & B & B & B & A & A & A & B 
+%\end{tabular}
+%\end{center}
+%\label{default}
+%\end{table}
+
+%What is the probability of obtaining this arrangement?
+
+\newpage
+
+\item Six equal size plots of land will be divided into two subplots. Two fertilizers, F and G, will be randomly assigned to each subplot by flipping a fair coin.  The table below shows the yield in bushels per acre after the fertilizers were administered. 
+
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{c c |c c c }
+Plot & Subplot & Yield & Fertilizer\\
+\hline
+1 & 2 & 78 & F\\
+2 & 1 & 82 & F\\
+3 & 2 & 82 & F\\
+4 & 1 & 65 & F\\
+5 & 1 & 51 & F \\
+6 & 2 & 75 & F \\
+1 & 1 & 72 & G \\
+2 & 2 & 70 & G \\
+3 & 1 & 55 & G \\
+4 & 2 & 85 & G \\
+5 & 2 & 59 & G \\
+6 & 1 & 80 & G 
+
+\end{tabular}
+\end{center}
+\label{default}
+\end{table}
+
+\begin{enumerate}
+\item What type of design was used in this study?  Explain.
+\item What is the probability that a subplot will receive Fertilizer G?  Explain.
+\item Describe the randomization distribution for this comparison.  How many values does this distribution contain. What is the probability of the observed treatment allocation?  Would you have been surprised if all the subplots 1 were assigned to, say, fertilizer F?  Explain.?
+\item Use the randomization test to determine if there is evidence of a difference in mean yield between the two fertilizers.  Explain your answer.  {\bf (Hand in your R code and output for this part)}
+\end{enumerate}
+
+\item Use the data in the previous question to conduct an appropriate t-test.  {\bf (Hand in your R code and output for this part)}
+
+
+\begin{enumerate}
+
+\item Are the assumptions behind the t-test satisfied?  
+\item Do the results of the t-test agree with the results of the randomization test?  Explain. 
+
+
+\end{enumerate}
+
+\end {enumerate}
+
+\end{document}  

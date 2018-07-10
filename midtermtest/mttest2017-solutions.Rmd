@@ -1,0 +1,527 @@
+---
+title: "STA305/1004 - L0101 Midterm Test Solutions"
+output: 
+  pdf_document: 
+    keep_tex: yes
+header-includes:
+- \newcommand{\benum}{\begin{enumerate}}
+- \newcommand{\eenum}{\end{enumerate}}
+date: "March 1, 2017, 11:10-12:40"
+---
+
+
+#Name: 
+
+
+#Student Number: 
+
+
+**Instructions:** Answer all four questions in 90 minutes. 
+
+
+**Aids allowed:** One 8.5’x11’ sheet with writing on both sides, and a calculator.
+
+The table below shows the value of each question.
+
+Question | Marks
+-------- | ------
+1        | 26
+2        | ~~25~~ 20 
+3        | 25
+4        | 20
+-------- | ------
+Total    | ~~96~~ 91
+
+
+This test contains 23 pages including this page.
+
+NB: There was an error in Question 2(a).  This question was omitted from the total test grade. See the Question 2(a) for more information. 
+
+\newpage
+
+\benum
+\item Five subjects with advanced colon cancer are enrolled in a two-arm randomized clinical trial. It was decided that three subjects would be randomized to Arm A (standard treatment), and two subjects to Arm B (new treatment). Subjects were assigned to the treatments by using five playing cards: three black and two red. The cards were shuffled ten times then each subject was assigned a card; if the card selected was black then the subject was assigned to arm B; if the card selected was red then the subject was assigned to arm A. 
+
+**There is a typo in this question. It should be two black and three red**  
+
+Subjects' tumour size (cm) was measured before treatment then one month after treatment.  One drug will be considered more effective than the other drug if average tumour growth is slower. 
+
+The table below shows the percent change in tumour size for each subject after one month.  For example, the first subject's tumour size grew by 1.6%.  The investigators are interested to see if the average change in tumour size for the new treatment is different compared to the standard treatment.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{c|c|c}
+Subject & Change in Tumour Size &       Arm \\ \hline
+1       & 1.6                           & B         \\
+2       & 2.7                           & A         \\
+3       & 2.8                           & A         \\
+4       & 3.1                           & A         \\
+5       & 1.5                           & B        
+\end{tabular}
+\end{table}
+
+#Analysis #1 
+
+```{r,comment=""}
+yA <- c(2.7,2.8,3.1)
+yB <- c(1.6,1.5,0)
+diff <- yA-yB
+diff
+
+N <- 32 
+res <- numeric(32) 
+LR <- list(c(-1,1)) 
+trtassign <- expand.grid(rep(LR, 5))
+
+for(i in 1:N){
+res[i] <- mean(as.numeric(trtassign[i,]*diff))
+}
+
+observed <- mean(yA)-mean(yB)
+observed
+tbar <- mean(res)
+tbar
+round(res,2)
+round(mean(res),2)
+round(res-tbar,2)
+round(observed-tbar,2)
+```
+
+
+# Analysis #2
+```{r,comment=""}
+yA <- c(2.7,2.8,3.1)
+yB <- c(1.6,1.5)
+round(mean(yA)-mean(yB),2)
+
+y <- c(2.7,2.8,3.1,1.6,1.5)
+index <-combn(1:5,3)
+res <- numeric(10)
+for(i in 1:10)
+{
+  res[i] <- mean(y[index[,i]])-mean(y[-index[,i]])
+}
+observed <- mean(yA)-mean(yB)
+tbar <- mean(res)
+tbar
+round(res,2)
+round(mean(res),2)
+round(res-tbar,2)
+round(observed-tbar,2)
+```
+
+
+\newpage
+
+Answer the following questions. (26 marks)
+
+\benum
+\item State the null and alternative hypotheses for this study.  Clearly define the statistical parameters in terms of the experimental context.  (5 marks)
+
+$\mu_S$ and $\mu_N$ are the mean percent change in tumour growth in the standard and new treatment arms respectively. 
+$H_0: \mu_S=\mu_N$ versus $H_1: \mu_S \ne \mu_N$.
+
+
+\item What is the probability that a subject will be assigned to standard treatment?  What is the probability of a treatment assignment chosen at random?  Was the treatment assignment selected at random? Explain. (6 marks)
+
+The probability of being assigned standard treatment is 2/5 if we assume that there are three black and two red.  If we assume that there are two black and three red then the probability is 3/5. Both are marked correctly.
+
+The probability of a treatment assignment chosen at random is $\frac{1}{\binom{5}{2}}=\frac{1}{10}.$  
+
+The treatment assignment was chosen at random since it was based on shuffling the cards which randomized the treatment assignments.
+
+\newpage
+
+\item Describe how the randomization distribution for the difference in means is calculated. What has been assumed in calculating this distribution?  Write down all the values of this randomization distribution.  (HINT: Look at the analyses done using R) (5 marks)
+
+The randomization distribution is calculated by assuming that $H_0$ is true.  The randomization distribution assumes that, if the null hypothesis is true, the two results obtained from each particular patient will be exchangeable.
+
+There are ${5\choose 2}={5 \choose 3}=10$ possible treatment assignments.  The values of the randomization distribution are the 10 mean differences that could have arisen if $H_0$ is true.  The values are obtained from Analysis #2.
+
+1.32  0.07 -0.02  0.32  0.23 -1.02  0.40  0.32 -0.93 -0.68
+
+Each value of the randomization distribution is calculated from each possible randomization.  For example, the observed value 1.32 is calculated from the observed randomization BAAAB, the 
+value 0.4 is calculated by switching 2.7 and 1.6 from group A to B (1.6+2.8+3.1)/3-(2.7+1.5)/2=0.40 (this corresponds to the treatment assignment ABAAB).  This is done for all 10 possible treatment assignments.
+
+
+
+\item  Calculate the appropriate randomization P-value.  Is there a significant difference in effectiveness between the new and standard drugs at the 1% significance level? Explain your reasoning.  (HINT: Look at the analyses done using R) (5 marks)
+
+The two-sided P-value is:
+
+$$\begin{aligned}
+P(\left|T-{\bar t}\right| \ge \left|t^{*}-{\bar t}\right||H_0) &= \sum_{i=1}^{5 \choose 3} \frac{I(\left|t_i-{\bar t}\right| \ge \left|t^{*}-{\bar t}\right|)}{{5 \choose 3}} \\
+&= \sum_{i=1}^{5 \choose 3} \frac{I(\left|t_i-{\bar t}\right| \ge 1.32)}{{5 \choose 3}} \\
+&= \frac{1}{10}
+\end{aligned}$$
+
+Therefore, not enough evidence to say the drugs are different at $\alpha=0.01$.
+
+\newpage
+
+\item A confused statistician calculated two t-tests: one is appropriate, and the other is inappropriate (see the R output below). If you use the results from the appropriate t-test do you reach the same conclusion as you did using the randomization test (assume the 1% significance level)? What has to be assumed in order for the t-test to be valid. (5 marks)  
+
+\eenum
+
+**T-test #1**
+```{r,comment=""}
+yA <- c(2.7,2.8,3.1)
+yB <- c(1.6,1.5)
+t.test(yA,yB)
+```
+
+
+**T-test #2**
+```{r,comment=""}
+yA <- c(2.7,2.8,3.1)
+yB <- c(1.6,1.5,0)
+t.test(yA,yB,paired = TRUE)
+```
+
+
+The two-sample t-test has a p-value=0.004.  So the conclusion is that the standard treatment is significantly better than the new treatment.  The t-test assumes that the two groups are independent and that the data in each group are independent and normally distributed with different means, and possibly different variances.     
+
+
+\newpage
+
+
+\item Answer the following questions. (25 marks)
+
+\benum
+
+\item Two drugs A and B are to be tested on subjects' eyes.  The drugs will be randomly assigned to each subject's eyes based on the flip of a fair coin.  If the coin toss is heads then a subject will receive drug A in the left eye and drug B in the right eye; if the coin toss is tails then the subject will receive drug A in the right eye and drug B in the left eye. The outcome of interest is intraoccular pressure (IOP).  The smallest clinically meaningful difference in IOP between the two drugs is 1.5mmHg.  The standard deviation of IOP is 2.5mmHg for each drug, and the standard deviation for the differences of IOP between A and B within each person is 1.5.  
+
+Circle the correct R output below that will allow you to determine how many subjects the researchers should enroll so that the study has 80\% power to detect this difference at the 5% significance level (5 marks)? 
+
+**Power calculation #1**
+```{r,comment=""}
+power.t.test(n = NULL,power=0.8,delta = 1,sd = 2.5,
+             sig.level = 0.05,type = "paired",
+             alternative = "two.sided")
+```
+
+**Power calculation #2**
+```{r,comment=""}
+power.t.test(n = NULL,power=0.8,delta = 1,sd = 1.5,
+             sig.level = 0.05,type = "paired",
+             alternative = "two.sided")
+```
+
+
+
+**Neither power calculation will give the numbr of subjects to enrol for 80% power.  Power calculation #1 has both the incorrect effect size (`delta`) and standard deviation (`sd`). Power calculation #2 has the incorrect effect size, but the correct standard deviation.  Both sample sizes will yield more than 80% power. This question will not be marked. It has been removed from the total possible marks.**
+
+\newpage
+
+\item A clinical trial where an experimental drug is to be compared with the standard treatment for a continuous biomarker measurement is being planned.  The biomarker measurements in each group are independent and normally distributed with different means $\mu_1, \mu_2$, and common variance $\sigma^2$.  The power function of the test $H_0:\theta=0$ versus $H_1:\theta > 0$, where $\theta=\mu_1-\mu_2$ at level $\alpha$ is:   
+
+
+$$1-\beta=1-\Phi\left( z_{\alpha}-\frac{\theta}{\sigma\sqrt{1/n_1+1/n_2}} \right), \text{ } \theta > 0,$$
+where, $\Phi(\cdot)$ is the standard normal CDF, and $z_{\alpha}$ is the $100(1-\alpha)^{th}$ percentile of the standard normal distribution.   
+
+Show that if the numbers of patients in the two groups are the same with $n_1=n_2=\frac{n}{2}$ then the total sample size required so that the trial has power $1-\beta$ is:
+
+$$n=\frac{4\sigma^2\left(z_{\alpha}+z_{\beta}\right)^2}{\theta^2}.$$  (5 marks)
+
+$$\begin{aligned}
+\beta &= \Phi\left(z_{\alpha}-\frac{\theta}{\sigma\sqrt{1/n_1+1/n_2}}\right) \\
+\Rightarrow \Phi^{-1}\left(\beta\right) &= z_{\alpha}-\frac{\theta}{\sigma\sqrt{1/n_1+1/n_2}} \\
+\Rightarrow -z_{\beta} &= z_{\alpha}-\frac{\theta}{\sigma\sqrt{1/n_1+1/n_2}} \\
+\Rightarrow \frac{4}{n} &= \frac{\theta^2}{\sigma^2\left(z_{\alpha}+z_{\beta}\right)^2} \\
+\Rightarrow n&=\frac{4\sigma^2\left(z_{\alpha}+z_{\beta}\right)^2}{\theta^2}
+\end{aligned}$$
+
+\newpage
+
+\item Consider again the situation in part (b) on the previous page.  The smallest clinically meaningful treatment difference is $\theta=1$ and the variance is $\sigma^2=9$.  If we conduct a one-sided Z-test at a significance level of $\alpha=0.05$, what is the power if the researchers enroll 80 subjects in each arm?  The clinical trial statistician calculated the power using R (the value for power is below each R code statement).  Which calculation is the correct power for the scenario in this question? (5 marks) 
+
+Circle the correct answer 
+
+```{r,comment=""}
+# qnorm(x) is the xth percentile of the standard normal distribution
+#
+# pnorm(x) is the standard normal cumulative distribution function 
+# evaluated at x
+# 
+# dnorm(x) is the standard normal density function evaluated at x
+
+1-pnorm(qnorm(1-.05)-1/(9*sqrt(1/80+1/80)))
+
+1-pnorm(qnorm(1-.05/2)-1/(3*sqrt(1/80+1/80)))
+
+1-dnorm(qnorm(1-.05)-1/(3*sqrt(1/80+1/80)))
+
+1-pnorm(qnorm(1-.05)-1/(3*sqrt(1/80+1/80)))
+
+1-dnorm(dnorm(.05/2)-1/(3*sqrt(1/80+1/80)))
+
+1-pnorm(dnorm(.05)-1/(3*sqrt(1/80+1/80)))
+
+```
+
+The correct power is: 
+
+```{r}
+1-pnorm(qnorm(1-.05)-1/(3*sqrt(1/80+1/80)))
+```
+
+
+\newpage
+
+\item A clinical trial to test an experimental drug for prostate cancer is being designed by a group of university researchers.  The response rate of the standard chemotherapy for prostate cancer is 22\%, and the researchers expect that the experimental drug would increase the response rate of the standard treatment to 35\% .  The researchers would like to have an allocation ratio between the standard and experimental arms of 2:1.  The graph below displays the total sample size required for 90\% power at the $0.05$ significance level.  If the type I error rate is $\alpha=0.05$ then approximately how many patients should the researchers recruit into the experimental arm so that their study has 90\% power? (5 marks)
+
+
+
+```{r,cache=TRUE,autodep=TRUE,echo=FALSE}
+sup.samplesize <- function(alpha,beta,p1,p2,r)
+{
+  zalpha <- qnorm(1-alpha)
+  zbeta <- qnorm(1-beta)
+  pbar <- (r*p1+p2)/(r+1)
+  theta <- p1-p2
+  n2 <- (((1/r)+1)/(theta^2))*((zalpha*sqrt(pbar*(1-pbar)))+
+                              zbeta*sqrt((p1*(1-p1)/r+p2*(1-p2))/((1/r)+1)))^2
+  n1 <- r*n2
+  #cat ("Sample size for standard arm:",round(n2),
+       #"\nSample size for experimental arm:", round(n1),
+       #"\nTotal sample size:",round(n1+n2),"\n")  
+  return(round(n1+n2))
+}
+
+f <- function(r){sup.samplesize(0.05,0.10,.35,.22,r)}
+r <- seq(1,5,by=1)
+plot(r,f(r),type="b",ylab="total sample size", xlab="allocation ratio")
+```
+
+Let $n_S$ and $n_E$ be the number of subjects in the standard and experimental group.  $n_S=2n_E$ and from the plot $n_S+n_E\approx 460$.  So, $2n_E+n_E\approx460 \Rightarrow n_E\approx153.$
+
+\newpage
+
+\item A study is being designed to compare the success rates of a standard drug versus experimental drug.  The researchers estimate that it's feasible to enrol 200 subjects per group. A statistician simulated 30 hypothetical clinical trials using R, where $H_0:p_1-p_2=0$ versus $H_1:p_1-p_2=0.10$. The simulation assumed that $p_1=0.55$ is the success rate in the experimental group and $p_2=0.45$ is the success rate in the standard group.  The table below shows the 30 simulated studies with their P-values. (5 marks)
+
+```{r,cache=TRUE,autodep=TRUE,echo=FALSE}
+set.seed(600)
+x1_sim <- rbinom(n = 30,size =200,prob = 0.55 )
+x2_sim <- rbinom(n = 30,size =200,prob = 0.45 )
+pvalres <- numeric(30)
+for (i in 1:30)
+{pvalres [i] <- prop.test(x=c(x1_sim[i],x2_sim[i]),
+                           n=c(200,200),
+                           alternative = "two.sided",
+                           correct =F)$p.value}
+```
+
+
+```{r,cache=TRUE,autodep=TRUE,echo=FALSE,comment=""}
+# calculate the number of times the tests are rejected at the 0.05 level 
+pvaltab <- data.frame(1:30,sort(round(pvalres,2)))
+names(pvaltab) <- c("Study Number","P-value")
+knitr:: kable(pvaltab)
+
+#sum(pvalres<=0.05)/N
+```
+
+
+
+\newpage
+
+Answer the following questions using the results of the simulation.
+
+* Estimate the power of the test at the 1% significance level? Show your work. (3 marks)
+
+Power = (number of studies with P-value <=0.01)/30
+
+$$Power=\frac{\# \text{studies with P-value}\le 0.01}{30}=\frac{13}{30}=0.43$$.
+
+* If the success rate in the experimental group were increased to $p_1=0.60$, but the success rate in the standard group remained the same (i.e., $p_2=0.45$) then would the power increase or decrease if the researchers used a significance level of 1%?  Explain. (2 marks)
+
+The power would increase since the effect size increases.  
+
+\eenum
+
+\newpage
+
+\item In 1999, Joshua Angrist and Victor Lavy published an unusual study of the effects of class size on academic achievement. They wrote:
+
+> Causal effects of class size on pupil achievement have proved very difficult to measure. Even though the level of educational inputs differs substantially both between and within schools, these differences are often associated with factors such as remedial training or students’ socioeconomic background . . . The great twelfth century Rabbinic scholar, Maimonides, interprets the Talmud’s discussion of class size as follows: ‘Twenty-five children may be put in charge of one teacher. If the number in the class exceeds twenty-five but is not more than forty, he should have an assistant to help with instruction. If there are more than forty, two teachers must be appointed.’ . . . The importance of Maimonides’ rule for our purposes is that, since 1969, it has been used to determine the division of enrollment cohorts into classes in Israeli public schools.
+
+
+Maimonides’ rule has the largest impact on a school with about 40 students in a grade cohort. With cohorts of size 40, 80, and 120 students, the steps down in average class size required by Maimonides’ rule when an additional student enrolls are, respectively, from 40 to 20.5, from 40 to 27, and from 40 to 30.25.
+
+In Israel (and in many other countries) a child will typically enrol in a school if they live close to the school. Adherence to Maimonides’ rule in Israeli public schools is not always followed.  In particular, Angrist and Lavy note that the percentage of disadvantaged students in a school “is used by the Ministry of Education to allocate supplementary hours of instruction and other school resources.”
+
+The primary goal of the analysis below is to estimate the effect of class size on math scores.  Data from 318 grade 5 Israeli public school classes were used to assess this question.
+
+The variable names are defined in the table below
+
+Label | Variable Description
+------|--------------------------------------
+`z` | 1= cohort of at least 41 students/2 or more classes, 0= cohort of less than 40 students/1 class.
+`pct_disadv`|  Percentage of students that are economically disadvantaged
+`avgmath` | Average math test score for each class.
+`classsize` | Size of classes
+
+
+```{r,cache=TRUE,echo=FALSE,message=FALSE}
+library(rbounds)
+library(Matching)
+data("AngristLavy")
+```
+
+\newpage
+#Description of the data
+
+```{r,comment=""}
+boxplot(classize~z,data = AngristLavy,xlab="z",ylab="Class Size")
+# distribution of z
+table(AngristLavy$z)
+# summary of class size when z=1
+summary(AngristLavy$classize[AngristLavy$z==1])
+# summary of class size when z=0
+summary(AngristLavy$classize[AngristLavy$z==0])
+```
+
+\newpage
+Three different types of data analyses were performed on the data.
+
+
+#Analysis #1
+
+```{r,comment=""}
+# Analysis 1
+mod1 <- lm(z~pct_disadv,data=AngristLavy)
+summary(mod1)$coefficients
+pscore <- predict(mod1,type = "response")
+mod2 <- lm(avgmath~z+pscore,data=AngristLavy)
+summary(mod2)$coefficients
+confint(mod2)
+```
+
+#Analysis #2
+
+```{r,comment=""}
+# Analysis 2
+rr <- Match(Y=AngristLavy$avgmath,Tr=AngristLavy$z,X=mod1$fitted)
+summary(rr)
+# Quantile of the t-distribution on 224 degrees of freedom
+qt(p = .975,df = 224 )
+```
+
+
+#Analysis #3
+
+```{r,comment=""}
+# Analysis 3
+t.test(avgmath~z,data=AngristLavy)
+```
+
+\newpage
+
+Answer the following questions. (25 marks)
+
+\benum
+
+\item What type of design was used in this study?  What is the treatment and how was the treatment assigned to the experimental units?  Briefly explain each of your answers. (6 marks)
+
+The study design is a natural experiment.  The treatment is class size (small class versus large class).  Students (the experimental units) were assigned to the treatment (small or large class) by a haphazard (chance) event that depends on the size of the grade 5 cohort.  
+
+\item Describe the type of analysis conducted in Analysis #1, Analysis #2, and Analysis #3 to evaluate the treatment effect. (6 marks)
+
+Analysis #1: Propensity score method using direct regression adjustment.
+
+Analysis #2: Matched propensity score.
+
+Analysis #3: Two-sample t-test (unadjusted).
+
+\newpage
+
+\item What is the estimated effect and 95% confidence interval of class size on math scores in Analysis #1, Analysis #2, and Analysis #3?  Briefly explain.  (6 marks)
+
+Let $\hat \delta$ be the estimate of the treatment difference.
+
+Analysis #1:  ${\hat \delta}=3.737117$, 95% CI: 1.634383 - 5.839851
+
+Analysis #2: ${\hat \delta}=3.1007$, 95% CI: $3.1007 \pm 1.970611\times1.3593=0.4214185 - 5.778722$ 
+
+Analysis #3: ${\hat \delta}=65.34412-61.42195=3.92217$, 95% CI: 1.197136 - 6.647189.
+
+\item Is the treatment assignment in this study ignorable?  Do smaller class sizes cause higher math scores?  Briefly explain. (7 marks)
+
+Treatment assignment is ignorable only if we assume that students' potential math scores are independent of being assigned to a certain class size conditional on the percent disadvantaged students in the class.  This seems like a plausible, although, untestable assumption.  If this assumption holds then there is evidence that small classes cause students to perform better in math.
+
+\eenum
+
+\newpage
+
+\item A study at UofT recruited twenty-one students to complete a thirty minute survey on diet and eating habits during the academic year.  Students were paid $10 to complete the survey.  The data below shows their weight gain from September to April classified by the frequency that students ate fast food.  In group A students reported never eating fast food; students in group B reported eating fast food twice per month; and students in group C reported eating fast food four times per month.
+
+```{r,echo=FALSE,cache=TRUE}
+set.seed(1417)
+A <- round(rnorm(n = 7, mean = 0.0, sd = 0.5),2)
+B <- round(rnorm(n = 7, mean = 0.5, sd = 0.9),2)
+C <- round(rnorm(n = 7, mean = 0.91, sd = 2.1),2)
+wtdata <- data.frame(A,B,C)
+wtchange <- c(A,B,C)
+grp <- c(rep("A",7),rep("B",7),rep("C",7))
+surveydat <- data.frame(grp,wtchange)
+write.csv(surveydat,"surveydat.csv")
+ave <- round(c(mean(A),mean(B),mean(C)),2)
+sd <- round(c(sd(A),sd(B),sd(C)),2)
+dat <- rbind(cbind(A,B,C),ave,sd)
+row.names(dat) <- c("","","","","","","", "Treatment Average", "Treatment SD")
+knitr::kable(dat,col.names=c("A","B","C"))
+```
+
+
+\newpage
+
+The researchers analyzed the data using R.
+
+```{r,comment=""}
+surveydat <- read.csv("surveydat.csv")
+boxplot(wtchange~grp,data = surveydat,ylab="Weight Change (Kg)", 
+        xlab="Fast Food Frequency")
+aovsurvey <- aov(wtchange~grp,data=surveydat)
+summary(aovsurvey)
+qqnorm(aovsurvey$residuals);qqline(aovsurvey$residuals)
+plot(aovsurvey$fitted.values, aovsurvey$residuals,ylab="Residuals",
+     xlab="Fitted",main="Weight Change Study")
+abline(h=0)
+```
+
+\newpage
+
+Answer the following questions. (20 marks)
+
+\benum
+
+\item Is this study an experiment or observational study?  What is the treatment? Briefly explain. (5 marks)
+
+This is an observational study since the treatment (number of times per month eating fast food) is not assigned by the researcher.
+
+\item  Would it have been feasible for the researcher to randomize students to the treatments?  What randomization scheme (assigning the subjects to the treatments) could the researcher use to accomplish the randomization? Briefly explain. (5 marks)
+
+No.  It would not be feasible for the researcher to randomize students to eat fast a certain number of times per month.  
+
+The study could be randomized by assigning all the participants the numbers 1 through 21 and taking a random permutation.  The first seven would be assigned to group A, the next seven to group B, etc.  For example in R we could use:
+
+```{r}
+set.seed(20)
+sample(1:21)
+```
+So, subjects 19 16  6 10 17 20  2 would be assigned to group A, etc.
+
+\newpage
+
+\item What is the ANOVA identity for this data?  Is it necessary that the data collected in each treatment group follow a normal distribution for the ANOVA identity to be true?  Briefly explain. (5 marks)
+
+The ANOVA identity is: $SS_{grp}+SS_{Resid}=SS_{Total}$. So, for this data: 1.633+18.664=
+20.297.  This identity holds regardless of the distribution within each group. Recall that this is the Pythagoras' theorem in higher dimensions.  
+
+\item The researcher is convinced that the results of the study would have provided strong evidence that eating fast food four times per month *causes* students to gain weight, if the sample size in each group was twice as large. Is this a valid statement? Briefly explain. (5 marks)
+
+Causation can only be established if the treatment assignment is ignorable.  In this case treatment assignment seems non-ignorable since subjects choose how many times per month to eat fast food, and this is most likely not independent of their weight change during the school year given individual characteristics (i.e., covariates).  For example, maybe first year students are more likely to gain weight during the school year compared to fourth year students who have more experience managing a healthy diet while at school.
+
+\eenum
+
+\eenum

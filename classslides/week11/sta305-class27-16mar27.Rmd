@@ -1,0 +1,590 @@
+---
+title: "STA305/1004-Class 24"
+output: beamer_presentation
+date: "March 30, 2016"
+fontsize: 8pt
+header-includes:
+   - \usepackage{wrapfig}
+---
+
+# Today's Class
+
++   Assessing significance in unreplicated factorial designs
+    -   Normal plots
+    -   half-Normal plots
+    -   Lenth's method
+
++   Blocking factorial designs
+    - Effect hierarchy principle
+    - Generation of orthogonal blocks
+    - Generators and deining relations
+    
++   Fractional factorial design
+
+# Exam review session
+
+
+\begin{wrapfigure}{R}{0.5\textwidth}
+  \begin{center}
+    \includegraphics[width=0.40\textwidth]{examjam.jpg}
+  \end{center}
+\end{wrapfigure}
+
+
+**Date:**    Monday, April 11th  
+---------------
+**Time:**    11 am - 12 noon
+---------------
+**Location:**    SS 2102
+---------------
+Stop by the SS lobby to take a few photos in the Photobooth, enjoy some free coffee and snacks and engage in other fun activities (lobby activities run 11-3).
+
+# Example - $2^3$ design for studying a chemical reaction
+
+A process development experiment studied four factors in a $2^4$ factorial design. 
+
+-  amount of catalyst charge **1**, 
+-  temperature **2**, 
+-  pressure **3**, 
+-  concentration of one of the reactants **4**.  
+-  The response $y$ is the percent conversion at each of the 16 run conditions. The design is shown below. 
+
+# Example - $2^4$ design for studying a chemical reaction
+
+```{r,cache=TRUE,echo=FALSE}
+tab0510a <- read.csv("~/Dropbox/Docs/sta305/BHHData/BHH2-Data/tab0510a.dat", sep="")
+knitr::kable(tab0510a[,2:6])
+
+```
+
+The design is not replicated so it's not possible to estimate the standard errors of the factorial effects.  
+
+# Example - $2^4$ design for studying a chemical reaction
+
+```{r,message=FALSE,comment=""}
+fact1 <- lm(conversion~x1*x2*x3*x4,data=tab0510a)
+round(2*fact1$coefficients,2)
+```
+
+# Half-Normal Plots
+
+- A related graphical method is called the half-normal probability plot. 
+- Let  $$\left|\hat{\theta}\right|_{(1)} < \left|\hat{\theta}\right|_{(2)} < \cdots < \left|\hat{\theta}\right|_{(N)}.$$ denote the ordered values of the unsigned factorial effect estimates.
+- Plot them against the coordinates based on the half-normal distribution - the absolute value of a normal random variable has a half-normal distribution.
+- The half-normal probability plot consists of the points $$\left|\hat{\theta}\right|_{(i)} \thinspace {\text vs. } \thinspace \Phi^{-1}(0.5+0.5[i-0.5]/N). \thinspace i=1,...,N.$$
+
+# Half-Normal Plots
+
+- An advantage of this plot is that all the large estimated effects appear in the upper right hand corner and fall above the line.
+- The half-normal plot for the effects in the process development example is can be obtained with `DanielPlot()` with the option `half=TRUE`.
+
+
+# Half-Normal Plots
+
+
+```{r,message=FALSE}
+library(FrF2)
+DanielPlot(fact1,half=TRUE,autolab=F, 
+           main="Half-Normal plot of effects from process development study")
+```
+
+
+# Half-Normal Plots
+
+Compare with full Normal plot.
+
+```{r,message=FALSE}
+library(FrF2)
+DanielPlot(fact1,half=F,autolab=F, 
+           main="Normal plot of effects from process development study")
+```
+
+# Lenth’s method: testing significance for experiments without variance estimates
+
+- Half-normal and normal plots are informal graphical methods involving visual judgement.  
+- It’s desirable to judge a deviation from a straight line quantitatively based on a formal test of significance.  
+- Lenth (1989) proposed a method that is simple to compute and performs well. (ref. pg. 205, Box, Hunter, and Hunter, 2005)
+
+# Lenth’s method
+
+- Let 
+
+$$\hat{\theta}_{(1)},...,\hat{\theta}_{(N)} $$
+
+be estimated factorial effects of $\theta_1,\theta_2,...,\theta_N$ in a $2^k$ design $N=2^k-1$.  
+
+- Assume that all the factorial effects have the same standard deviation. 
+
+- The pseudo standard error (PSE) is defined as
+
+$$PSE=1.5 \cdot \text{median}_{\left|\hat{\theta}_{i}\right|<2.5s_0}\left|\hat{\theta}_{i}\right|,$$
+
+- The median is computed among the $\left|\hat{\theta}_{i}\right|$ with $\left|\hat{\theta}_{i}\right| < 2.5 s_0$ and 
+
+$$s_0=1.5 \cdot \text{median}\left|\hat{\theta}_{i}\right|.$$
+
+# Lenth’s method
+
+- $1.5 \cdot s_0$ is a consistent estimator of the standard deviation of $\hat \theta$ when $\theta_i=0$ and the underlying distribution is normal.  
+
+- The $P\left(|Z|>2.57\right)=0.01, Z\sim N(0,1)$.   
+- $\left|\hat{\theta}_{i}\right|<2.5s_0$ trims approximately 1% of the $\hat \theta_i$ if $\theta_i=0$. 
+- The trimming attempts to remove the $\hat \theta_i$ associated with non-zero (active) effects.  
+- By using the median in combination with the trimming means that $PSE$ is not sensitive to the $\hat \theta_i$ associated with active effects. 
+
+
+
+# Lenth’s method
+
+- To obtain a margin of error Lenth suggested multiplying the PSE by the $100*(1-\alpha)$ quantile of the $t_d$ distribution, $t_{d,\alpha/2}$. 
+- The degrees of freedom is $d=N/3$. For example, the margin of error for a 95% confidence interval for $\theta_i$ is
+
+$$ME= t_{d,.025}\times PSE.$$ 
+
+- All estimates greater than the $ME$ may be viewed as "significant", but with so many estimates being considered simultaneously, some will be falsely identified.
+
+- A simultaneous margin of error that accounts for multiple testing can also be calculated,
+
+$$SME=t_{d,\gamma} \times PSE,$$
+
+where $\gamma=\left(1+0.95^{1/N}\right)/2$.
+
+- The details of how to calculate $MSE$ and $PSE$ are given in the class notes.
+
+# Lenth’s method - Lenth Plot for process development example
+
+
+```{r,comment="",message=FALSE,echo=FALSE}
+library(BsMD)
+```
+
+```{r}
+LenthPlot(fact1,cex.fac = 0.8)
+```
+
+# Blocking factorial designs
+
+- In a trial conducted using a $2^3$ design it might be desirable to use the same batch of raw material to make all 8 runs. 
+- Suppose that batches of raw material were only large enough to make 4 runs.  Then the concept of blocking could be used.
+
+# Blocking factorial designs
+
+Consider the $2^3$ design.
+
+```{r,comment="",echo=FALSE,cache=TRUE}
+x1 <- rep(c(-1,1),4)
+x2 <- rep(c(-1,-1,1,1),2)
+x3 <- rep(c(rep(-1,4),rep(1,4)))
+x12 <- x1*x2
+x13 <- x1*x3
+x23 <- x2*x3
+x123 <- x1*x2*x3
+run <- 1:8
+factnames <- c("Run","1","2","3","12","13","23","123")
+knitr::kable(cbind(run,x1,x2,x3,x12,x13,x23,x123),col.names=factnames)
+```
+
+
+Runs          Block  
+-----------  ------- 
+1, 4, 6, 7      I       
+2, 3, 5, 8     II
+
+How are the runs assigned to the blocks?
+
+# Blocking factorial designs
+
+```{r,echo=FALSE}
+knitr::kable(cbind(run,x1,x2,x3,x12,x13,x23,x123),col.names=factnames)
+```
+
+
+Runs          Block   sign of 123
+-----------   ------  -----------
+1, 4, 6, 7      I      $-$
+2, 3, 5, 8     II      $+$
+
+# Blocking factorial designs
+
+- Any systematic differences between the two blocks of four runs will be eliminated from all the main effects and two factor interactions. 
+- What you gain is the elimination of systematic differences between blocks. 
+- But now the three factor interaction is confounded with any batch (block) difference. 
+- The ability to estimate the three factor interaction separately from the block effect is lost. 
+
+# Effect hierarchy principle
+
+1.  Lower-order effects are more likely to be important than higher-order effects.
+
+2.  Effects of the same order are equally likely to be important.
+
+- One reason that many accept this principle is that higher order interactions are more difficult to interpret or justify physically.  
+- Investigators are less interested in estimating the magnitudes of these effects even when they are statistically significant.
+
+
+# Generation of Orthogonal Blocks
+
+In the $2^3$ example suppose that the block variable is given the identifying number 4.
+
+```{r,comment="",echo=FALSE}
+x1 <- rep(c(-1,1),4)
+x2 <- rep(c(-1,-1,1,1),2)
+x3 <- rep(c(rep(-1,4),rep(1,4)))
+x12 <- x1*x2
+x13 <- x1*x3
+x23 <- x2*x3
+x123 <- x1*x2*x3
+run <- 1:8
+factnames <- c("Run","1","2","3","4=123")
+knitr::kable(cbind(run,x1,x2,x3,x123),col.names = factnames)
+```
+
+
+- Think of your experiment as containing four factors.
+- The fourth factor will have the special property that it does not interact with other factors.  
+- If this new factor is introduced by having its levels coincide exactly with the plus and minus signs attributed to 123 then the blocking is said to be **generated** by the relationship 4=123.
+- This idea can be used to derive more sophisticated blocking arrangements. 
+
+# An example of how not to block
+
+Suppose we would like to arrange the $2^3$ design into four blocks.
+
+```{r,comment="",echo=FALSE}
+x1 <- rep(c(-1,1),4)
+x2 <- rep(c(-1,-1,1,1),2)
+x3 <- rep(c(rep(-1,4),rep(1,4)))
+x12 <- x1*x2
+x13 <- x1*x3
+x23 <- x2*x3
+x123 <- x1*x2*x3
+run <- 1:8
+factnames <- c("Run","1","2","3","4=123","5=23","45=1")
+knitr::kable(cbind(run,x1,x2,x3,x123,x23,x1),col.names = factnames)
+```
+
+- Runs are placed in different blocks depending on the signs of the block variables in columns 4 and 5.  
+- Consider two block factors called 4 and 5.  
+- 4 is associated with ? 
+- 5 is associated ? 
+
+# An example of how not to block
+
+```{r,comment="",echo=FALSE}
+x1 <- rep(c(-1,1),4)
+x2 <- rep(c(-1,-1,1,1),2)
+x3 <- rep(c(rep(-1,4),rep(1,4)))
+x12 <- x1*x2
+x13 <- x1*x3
+x23 <- x2*x3
+x123 <- x1*x2*x3
+run <- 1:8
+factnames <- c("Run","1","2","3","4=123","5=23","45=1")
+knitr::kable(cbind(run,x1,x2,x3,x123,x23,x1),col.names = factnames)
+```
+
+
+Block   Run
+------  -----
+I        
+II       
+III      
+IV       
+
+# An example of how not to block
+
+- 45 is confounded with the main effect of 1.  
+- Therefore, if we use 4 and 5 as blocking variables we will not be able to estimate the main effect 1.  
+- Main effects should not be confounded with block effects. 
+
+# An example of how not to block
+
+- Any blocking scheme that confounds main effects with blocks should not be used. 
+- This is based on the assumption: 
+
+> The block-by-treatment interactions are negligible.
+
+- This assumption states that treatment effects do not vary from block to block.
+- Without this assumption estimability of the factorial effects will be very complicated.
+
+# An example of how not to block
+
+
+- For example, if $B_1=12$ then this implies two other relations: 
+
+$$ 1B_1=112=2 \thinspace {\text {and}} \thinspace  B_12=122=122=1.$$
+
+- If there is a significant interaction between the block effect $B_1$ and the main effect 1 then the main effect 2 is confounded with $1B_1$.
+- If there is a significant interaction between the block effect $B_1$ and the main effect 2 then the main effect 1 is confounded with $B_12$.
+
+# How to do it
+
+```{r,comment="",echo=FALSE}
+x1 <- rep(c(-1,1),4)
+x2 <- rep(c(-1,-1,1,1),2)
+x3 <- rep(c(rep(-1,4),rep(1,4)))
+x12 <- x1*x2
+x13 <- x1*x3
+x23 <- x2*x3
+x123 <- x1*x2*x3
+run <- 1:8
+factnames <- c("Run","1","2","3","4=12","5=13")
+knitr::kable(cbind(run,x1,x2,x3,x12,x13),col.names = factnames)
+```
+
+
+- Set 4=12, 5=13.
+- Then $I=124=135=2345$.
+- Estimated block effects 4, 5, 45 are assoicated with the estimated two-factor interaction effects 12, 13, 23 and not any main effects.
+- Which runs are assigned to which blocks?
+
+
+# Generators and Defining Relations
+
+- A simple calculus is available to show the consequences of any proposed blocking arrangement.  
+- If any column in a $2^k$ design are multiplied by themselves a column of plus signs is obtained.  This is denoted by the symbol $I$.  
+
+$$I=11=22=33=44=55,$$
+
+where, for example, 22 means the product of the elements of column 2 with itself.
+
+- Any column multiplied by $I$ leaves the elements unchanged.  So, $I3=3$.
+
+# Generators and Defining Relations
+
+- A general approach for arranging a $2^k$ design in $2^q$ blocks of size $2^{k-q}$ is as follows.
+
+- Let $B_1, B_2, ...,B_q$ be the block variables and the factorial effect $v_i$ is confounded with $B_i$,
+
+$$B_1=v_1,B_2=v_2,...,B_q=v_q.$$
+
+- The block effects are obtained by multiplying the $B_i$'s:
+
+$$B_1B_2=v_1v_2, B_1B_3=v_1v_3,...,B_1B_2 \cdots B_q=v_1v_2 \cdots v_q$$
+
+- There are $2^{q}-1$ possible products of the $B_i$'s and the $I$ (whose components are +).  
+
+# Generators and Defining Relations
+
+Example:  A $2^5$ design can be arranged in 8 blocks of size $2^{5-3}=4$.  
+
+Consider two blocking schemes.
+
+1. Define the blocks as 
+
+$$B_1=135, B_2=235, B_3=1234.$$  The remaining blocks are confounded with the following interactions:
+
+2. Define the blocks as:
+
+$$B_1=12, B_2=13, B_3=45.$$
+
+Which is a better blocking scheme?
+
+
+# Fractional factorial designs
+
+- A $2^k$ full factorial requires $2^k$ runs.  
+- Full factorials are seldom used in practice for large k (k>=7).  
+- For economic reasons fractional factorial designs, which consist of a fraction of full factorial designs are used.  
+
+# Example - Effect of five factors on six properties of film in eight runs
+
+Five factors were studied in 8 runs (Box, Hunter, and Hunter (2005)).  The factors were:
+
+(@)  Catalyst concentration (A)
+(@)  Amount of additive (B)
+(@)  Amounts of three emulsifiers (C, D, E)
+
+Polymer solutions were prepared and spread as a film on a microscope slide.  Six different responses were recorded.
+
+```{r,echo=FALSE,cache=TRUE}
+tab0601 <- read.csv("~/Dropbox/Docs/sta305/BHHData/BHH2-Data/tab0601.dat", sep="")
+```
+
+```{r,echo=FALSE}
+knitr::kable(tab0601)
+```
+
+# Example - Effect of five factors on six properties of film in eight runs
+
+-  The eight run design was constructed beginning with a standard table of signs for a $2^3$ design in the factors A, B, C.
+
+-  The column of signs associated with the BC interaction was used to accommodate factor D, the ABC interaction column was used for factor E.
+
+-  A full factorial for the five factors A, B, C, D, E would have needed $2^5=32$ runs.
+
+- Only 1/4 were run. This design is called a quarter fraction of the full $2^5$ or a $2^{5-2}$ design (a two to the five minus two design). 
+
+- In general a $2^{k-p}$ design is a $\frac{1}{2^p}$ fraction of a $2^k$ design using $2^{k-p}$ runs.
+
+# Effect Aliasing and Design Resolution
+
+- A chemist in an industrial development lab was trying to formulate a household liquid product using a new process. 
+- The liquid had good properties but was unstable.  
+- The chemist wanted to synthesize the product in hope of hitting conditions that would give stability, but without success.  
+- The chemist identified four important influences: A (acid concentration), B (catalyst concentration), C (temperature), D (monomer concentration).  
+
+# Effect Aliasing and Design Resolution
+
+- His 8 run fractional factorial design is shown below.
+
+```{r,echo=FALSE}
+tab0602 <- read.csv("~/Dropbox/Docs/sta305/BHHData/BHH2-Data/tab0602.dat", sep="")
+```
+
+```{r,echo=FALSE}
+knitr::kable(tab0602)
+```
+
+- The signs of the ABC interaction is used to accommodate factor D.  The tests were run in random order.  He wanted to achieve a stability value of at least 25.  
+
+# Effect Aliasing and Design Resolution
+
+```{r,comment="",cache=TRUE,message=FALSE,echo=FALSE}
+library(FrF2)
+```
+
+
+```{r,comment="",cache=TRUE,message=FALSE,echo=TRUE,comment=""}
+fact.prod <- lm(y~A*B*C*D,data=tab0602)
+fact.prod1 <- aov(y~A*B*C*D,data=tab0602)
+round(2*fact.prod$coefficients,2)
+```
+
+Even though the stability never reached the desired level of 25, two important factors, A and B, were identified. 
+
+
+
+# Effect Aliasing and Design Resolution
+
+```{r}
+DanielPlot(fact.prod,half = T)
+```
+
+
+
+# Effect Aliasing and Design Resolution
+
+```{r}
+LenthPlot(fact.prod1)
+```
+
+
+
+# Effect Aliasing and Design Resolution
+
+What information could have been obtained if a full $2^5$ design had been used?
+
+Factors  Number of effects
+------- -------------------
+Main        5
+2-factor    10
+3-factor    10
+4-factor    5
+5-factor    1
+
+- 31 degrees of freedom in a 32 run design.
+- 16 used for estimating three factor interactions or higher.  
+- Is it practical to commit half the degrees of freedom to estimate such effects?  
+- According to effect hierarchy principle three-factor and higher not usually important.  
+- Thus, using full factorial wasteful.  It's more economical to use a fraction of full factorial design that allows lower order effects to be estimated.
+
+# Effect Aliasing and Design Resolution
+
+Consider a design that studies five factors in 16 run.  A half fraction of a $2^5$ or $2^{5-1}$.
+
+```{r,comment="",echo=FALSE}
+B <- rep(c(-1,1),8)
+C <- rep(c(1,1,-1,-1),4)
+D <- rep(c(rep(1,4),rep(-1,4)),2)
+E <- B*C*D
+Q <- c(rep(-1,8),rep(1,8))
+run <- 1:16
+factnames <- c("Run","B","C","D","E","Q")
+knitr::kable(cbind(run,B,C,D,E,Q),col.names = factnames)
+```
+
+- The factor E is assigned to the column BCD.  
+- The column for E is used to estimate the main effect of E and also for BCD.  
+- The main factor E is said to be **aliased** with the BCD interaction.
+
+# Effect Aliasing and Design Resolution
+
+- This aliasing relation is denoted by
+$$E=BCD \text{ or } I=BCDE,$$
+where $I$ denotes the column of all +’s.
+
+- This uses same mathematical definition as the confounding of a block effect with a factorial effect.  
+- Aliasing of the effects is a price one must pay for choosing a smaller design. 
+
+- The $2^{5-1}$ design has only 15 degrees of freedom for estimating factorial effects, it cannot estimate all 31 factorial effects among the factors B, C, D, E, Q.
+
+# Effect Aliasing and Design Resolution
+
+- The equation $I=BCDE$ is called the **defining relation** of the $2^{5-1}$ design.
+- The design is said to have resolution IV because the defining relation consists of the “word” BCDE, which has “length” 4.
+- Multiplying both sides of $I=BCDE$ by column B
+$$B=B \times I=B \times BCDE=CDE,$$
+the relation $B=CDE$ is obtained.  
+- B is aliased with the CDE interaction.  Following the same method all 15 aliasing relations can be obtained.
+
+# Effect Aliasing and Design Resolution
+
+- To get the most desirable alias patterns, fractional factorial designs of highest resolution would usually be employed.
+- There are important exceptions to this rule that we will not cover in the course.
+
+# Example - Leaf spring experiment
+
+An experiment to improve a heat treatment process on truck leaf springs (Wu and Hamada (2009)).  The height of the unloaded spring is an important quality characteristic.  
+
+\begin{figure}[h]
+\includegraphics[width=4.5cm]{leafspring.jpg}
+\includegraphics[width=4.5cm]{Spring_Measurement.jpg}
+\end{figure}
+
+
+# Example - Leaf spring experiment
+
+Five factors that might affect height were studied in this $2^{5-1}$ design.
+
+Factor                          Level
+-------------------------    -------------------------
+B. Temperature                1840 (-), 1880 (+)
+C. Heating time               23 (-), 25 (+)
+D. Transfer time              10 (-), 12 (+)
+E. Hold down time             2 (-), 3 (+)
+Q. Quench oil temperature     130-150 (-), 150-170 (+)
+
+# Example - Leaf spring experiment
+
+
+```{r,cache=TRUE,echo=FALSE}
+leafspring <- read.csv("~/Dropbox/Docs/sta305/2016/classnotes/week10/leafspring.dat", sep="")
+knitr::kable(leafspring)
+```
+
+# Example - Leaf spring experiment
+
+The factorial effects are estimated as before.
+
+```{r,cache=TRUE,comment=""}
+library(FrF2)
+fact.leaf <- lm(y~B*C*D*E*Q,data=leafspring)
+fact.leaf2 <- aov(y~B*C*D*E*Q,data=leafspring)
+round(2*fact.leaf$coefficients,2)
+```
+
+
+
+# Example - Leaf spring experiment
+
+```{r,comment=""}
+DanielPlot(fact.leaf,half = F)
+```
+
+
+
+# Example - Leaf spring experiment
+
+```{r,comment=""}
+LenthPlot(fact.leaf2,cex.fac = 0.8)
+```
+
