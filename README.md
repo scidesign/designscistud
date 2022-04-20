@@ -1,6 +1,6 @@
-# Course materials for design of scientific studies
+# Sample course materials using Design and Analysis of Experiments and Observational Studies using R
 
-A twelve week course in the Department of Statistical Sciences, University of Toronto.  
+Sample course meterials from a 12 week course in the [Department of Statistical Sciences, University of Toronto](http://statistics.utoronto.ca).  
 
-A free book is available [here](https://leanpub.com/designinfer), and an online version of the weekly notes are available [here](http://utstat.toronto.edu/~nathan/designscistudynotes.htm).
+A free version of [Design and Analysis of Experiments and Observational Studies using R](https://www.routledge.com/Design-and-Analysis-of-Experiments-and-Observational-Studies-using-R/Taback/p/book/9780367456856) is available [here](https://scidesign.github.io/design-studies-book-r/).
 
